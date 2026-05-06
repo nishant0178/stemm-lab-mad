@@ -4,6 +4,14 @@ export type AppUser = {
   displayName?: string;
 };
 
+export type Team = {
+  id: string;
+  name: string;
+  members: string[];
+  yearLevel: string;
+  createdBy: string;
+};
+
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
