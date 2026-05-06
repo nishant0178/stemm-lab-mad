@@ -4,19 +4,34 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/config/firebase';
+import { getTeamByUser } from './src/services/firestore';
 import { useAuthStore } from './src/store/authStore';
+import { useTeamStore } from './src/store/teamStore';
 import RootNavigator from './src/navigation/RootNavigator';
 
 export default function App() {
   const { user, loading, setUser, setLoading } = useAuthStore();
+  const { team, setTeam } = useTeamStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(
-        firebaseUser
-          ? { uid: firebaseUser.uid, email: firebaseUser.email ?? '', displayName: firebaseUser.displayName ?? undefined }
-          : null,
-      );
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? undefined,
+        });
+        // Restore existing team for returning users
+        try {
+          const existingTeam = await getTeamByUser(firebaseUser.uid);
+          if (existingTeam) setTeam(existingTeam);
+        } catch {
+          // Non-fatal — user will just be sent to TeamSetup
+        }
+      } else {
+        setUser(null);
+        setTeam(null);
+      }
       setLoading(false);
     });
     return unsubscribe;
@@ -33,7 +48,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="light" />
-      <RootNavigator isAuthenticated={!!user} />
+      <RootNavigator isAuthenticated={!!user} hasTeam={!!team} />
     </NavigationContainer>
   );
 }
