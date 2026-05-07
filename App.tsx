@@ -1,14 +1,19 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 
-// ISOLATION STEP 3 — NavigationContainer wrapper only
+// ISOLATION STEP 4 — RootNavigator with Login + Register only, no auth/stores
+const Stack = createNativeStackNavigator();
+
 export default function App() {
   return (
     <NavigationContainer>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d1b2a' }}>
-        <Text style={{ color: '#4fc3f7', fontSize: 22 }}>Step 3 — NavigationContainer</Text>
-      </View>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
