@@ -1,12 +1,17 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { auth } from './src/config/firebase';
 
-// ISOLATION TEST — strip everything to bare minimum
-// If no JSI error here → bug is in Firebase / Navigation / ActivityIndicator size prop
+// ISOLATION STEP 2 — Firebase init + ActivityIndicator size="large"
+// If error appears here → culprit is ActivityIndicator size prop or Firebase init
+void auth; // ensure firebase is initialized
+
 export default function App() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d1b2a' }}>
-      <Text style={{ color: '#4fc3f7', fontSize: 22 }}>STEMM Lab — isolation test</Text>
+      <StatusBar style="light" />
+      <ActivityIndicator size="large" color="#4fc3f7" />
     </View>
   );
 }
