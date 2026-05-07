@@ -1,7 +1,11 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+
+// NOTE: Using getAuth (in-memory persistence) instead of initializeAuth +
+// AsyncStorage because @react-native-async-storage/async-storage v2.2.0 has
+// a JSI TurboModule type mismatch with RN 0.81.5 New Arch in Expo Go.
+// Switch to initializeAuth + getReactNativePersistence when using a dev client build.
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -14,7 +18,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+export const auth = getAuth(app);
 export const db = getFirestore(app);
