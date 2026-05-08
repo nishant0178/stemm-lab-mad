@@ -72,8 +72,7 @@ export default function TeamSetupScreen({ navigation }: Props) {
         yearLevel,
         createdBy: user!.uid,
       });
-      setTeam(team);
-      navigation.replace('Home');
+      setTeam(team); // triggers conditional re-render in RootNavigator → Home
     } catch (err: any) {
       Alert.alert('Error', err.message);
     } finally {
