@@ -1,3 +1,5 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
+
 export type AppUser = {
   uid: string;
   email: string;
@@ -12,15 +14,19 @@ export type Team = {
   createdBy: string;
 };
 
+export type MainTabParamList = {
+  Home: undefined;
+  Leaderboard: undefined;
+  Settings: undefined;
+};
+
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
-  Home: undefined;
   TeamSetup: undefined;
+  MainTabs: NavigatorScreenParams<MainTabParamList>;
   ReactionBoard: undefined;
   Vibration: undefined;
-  Leaderboard: undefined;
   Map: undefined;
-  Settings: undefined;
   Results: { activityId: string };
 };
