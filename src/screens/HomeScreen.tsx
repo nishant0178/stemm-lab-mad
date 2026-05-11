@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTeamStore } from '../store/teamStore';
 import { RootStackParamList } from '../types';
+import { getRecentScores, LocalScore } from '../services/localCache';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -25,9 +27,31 @@ const ACTIVITIES = [
   },
 ];
 
+function timeAgo(ms: number): string {
+  const diff = Math.floor((Date.now() - ms) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+  return `${Math.floor(diff / 86400)} d ago`;
+}
+
+function activityLabel(activity: string): string {
+  if (activity === 'reactionBoard') return 'Reaction Board';
+  return activity;
+}
+
 export default function HomeScreen() {
   const navigation = useNavigation<NavProp>();
   const { team } = useTeamStore();
+  const [recentScores, setRecentScores] = useState<LocalScore[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      getRecentScores(5)
+        .then(setRecentScores)
+        .catch(() => setRecentScores([]));
+    }, []),
+  );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -51,6 +75,22 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       ))}
+
+      <Text style={styles.sectionHeading}>Your Recent Scores</Text>
+      {recentScores.length === 0 ? (
+        <Text style={styles.emptyText}>No scores yet. Play to record one!</Text>
+      ) : (
+        recentScores.map((score) => (
+          <View key={score.id} style={styles.scoreRow}>
+            <Ionicons name="flash" size={14} color="#4fc3f7" style={styles.scoreIcon} />
+            <Text style={styles.scoreText}>
+              {activityLabel(score.activity)} —{' '}
+              <Text style={styles.scoreMs}>{score.reactionTimeMs}ms</Text>
+              {' '}— {timeAgo(score.attemptedAt)}
+            </Text>
+          </View>
+        ))
+      )}
     </ScrollView>
   );
 }
@@ -116,5 +156,42 @@ const styles = StyleSheet.create({
     color: '#0d1b2a',
     fontWeight: '700',
     fontSize: 14,
+  },
+  sectionHeading: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#546e7a',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#546e7a',
+    textAlign: 'center',
+    paddingVertical: 16,
+  },
+  scoreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1c2e3f',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#263d54',
+  },
+  scoreIcon: {
+    marginRight: 8,
+  },
+  scoreText: {
+    fontSize: 14,
+    color: '#90a4ae',
+    flex: 1,
+  },
+  scoreMs: {
+    color: '#4fc3f7',
+    fontWeight: '700',
   },
 });
