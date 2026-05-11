@@ -140,8 +140,9 @@ export default function ReactionBoardScreen() {
                     reactionTimeMs: reactionTime,
                     bestEverMs: bestReactionTime ?? reactionTime,
                   });
+                  console.log('[ReactionBoard] Firestore save done, calling saveScoreLocally', reactionTime);
                   saveScoreLocally('reactionBoard', reactionTime).catch(
-                    (e) => console.warn('Local cache save failed:', e),
+                    (e) => console.warn('[ReactionBoard] Local cache save failed:', e),
                   );
                   setSaved(true);
                 } catch {
