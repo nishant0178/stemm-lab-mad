@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './src/config/firebase';
 import { getTeamByUser } from './src/services/firestore';
+import { initDatabase } from './src/services/localCache';
 import { useAuthStore } from './src/store/authStore';
 import { useTeamStore } from './src/store/teamStore';
 import RootNavigator from './src/navigation/RootNavigator';
@@ -14,6 +15,10 @@ import RootNavigator from './src/navigation/RootNavigator';
 export default function App() {
   const { user, loading, setUser, setLoading } = useAuthStore();
   const { team, setTeam } = useTeamStore();
+
+  useEffect(() => {
+    initDatabase().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {

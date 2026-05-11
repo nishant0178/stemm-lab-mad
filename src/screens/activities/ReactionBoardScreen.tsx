@@ -5,6 +5,7 @@ import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore } from '../../store/teamStore';
 import { saveReactionBoardScore } from '../../services/firestore';
+import { saveScoreLocally } from '../../services/localCache';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
@@ -139,6 +140,9 @@ export default function ReactionBoardScreen() {
                     reactionTimeMs: reactionTime,
                     bestEverMs: bestReactionTime ?? reactionTime,
                   });
+                  saveScoreLocally('reactionBoard', reactionTime).catch(
+                    (e) => console.warn('Local cache save failed:', e),
+                  );
                   setSaved(true);
                 } catch {
                   Alert.alert('Error', 'Could not save score. Please try again.');
