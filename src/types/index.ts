@@ -1,4 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
+import type { Timestamp } from 'firebase/firestore';
 
 export type AppUser = {
   uid: string;
@@ -18,6 +19,12 @@ export type MainTabParamList = {
   Home: undefined;
   Leaderboard: undefined;
   Settings: undefined;
+};
+
+export type ReactionBoardScore = {
+  teamId: string;
+  reactionTimeMs: number;
+  attemptedAt: Timestamp;
 };
 
 export type RootStackParamList = {
