@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getRandomDelay, calculateReactionTime } from '../../lib/reactionBoard';
 import { useGameStore } from '../../store/gameStore';
+import { useAuthStore } from '../../store/authStore';
+import { useTeamStore } from '../../store/teamStore';
+import { saveReactionBoardScore } from '../../services/firestore';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
@@ -17,7 +20,11 @@ const PHASE_BG: Record<Phase, string> = {
 export default function ReactionBoardScreen() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [reactionTime, setReactionTime] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const { bestReactionTime, setBestReactionTime } = useGameStore();
+  const { user } = useAuthStore();
+  const { team } = useTeamStore();
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyAtRef = useRef<number>(0);
@@ -61,6 +68,7 @@ export default function ReactionBoardScreen() {
       default:
         setPhase('idle');
         setReactionTime(null);
+        setSaved(false);
         break;
     }
   };
@@ -114,14 +122,34 @@ export default function ReactionBoardScreen() {
             <Text style={styles.best}>Session best: {bestReactionTime}ms</Text>
           )}
           <View style={styles.btnRow}>
-            <Pressable style={styles.btnSecondary} onPress={() => { setPhase('idle'); setReactionTime(null); }}>
+            <Pressable style={styles.btnSecondary} onPress={() => { setPhase('idle'); setReactionTime(null); setSaved(false); }}>
               <Text style={styles.btnSecondaryText}>Try Again</Text>
             </Pressable>
             <Pressable
-              style={styles.btnPrimary}
-              onPress={() => console.log('Save score — coming in US-05', { reactionTime })}
+              style={[styles.btnPrimary, (saving || saved) && styles.btnDisabled]}
+              disabled={saving || saved}
+              onPress={async () => {
+                if (!user || !team || reactionTime === null) return;
+                setSaving(true);
+                try {
+                  await saveReactionBoardScore({
+                    teamId: team.id,
+                    userId: user.uid,
+                    activity: 'reactionBoard',
+                    reactionTimeMs: reactionTime,
+                    bestEverMs: bestReactionTime ?? reactionTime,
+                  });
+                  setSaved(true);
+                } catch {
+                  Alert.alert('Error', 'Could not save score. Please try again.');
+                } finally {
+                  setSaving(false);
+                }
+              }}
             >
-              <Text style={styles.btnPrimaryText}>Save Score</Text>
+              <Text style={styles.btnPrimaryText}>
+                {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save Score'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -208,6 +236,9 @@ const styles = StyleSheet.create({
     color: '#0d1b2a',
     fontWeight: '700',
     fontSize: 15,
+  },
+  btnDisabled: {
+    opacity: 0.5,
   },
   btnSecondary: {
     backgroundColor: '#1c2e3f',
