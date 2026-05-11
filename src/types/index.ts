@@ -23,7 +23,10 @@ export type MainTabParamList = {
 
 export type ReactionBoardScore = {
   teamId: string;
+  userId: string;
+  activity: 'reactionBoard';
   reactionTimeMs: number;
+  bestEverMs: number;
   attemptedAt: Timestamp;
 };
 
