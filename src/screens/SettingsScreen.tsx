@@ -1,18 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Battery from 'expo-battery';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { useAuthStore } from '../store/authStore';
 import { useTeamStore } from '../store/teamStore';
+import {
+  getBatteryLevel,
+  getBatteryState,
+  subscribeBatteryUpdates,
+  batteryStateLabel,
+  batteryStateIcon,
+} from '../services/battery';
 
 export default function SettingsScreen() {
   const { user } = useAuthStore();
   const { team, setTeam } = useTeamStore();
 
+  const [batteryLevel, setBatteryLevel] = useState<number>(-1);
+  const [batteryState, setBatteryState] = useState<Battery.BatteryState>(Battery.BatteryState.UNKNOWN);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [level, state] = await Promise.all([getBatteryLevel(), getBatteryState()]);
+      if (!cancelled) {
+        setBatteryLevel(level);
+        setBatteryState(state);
+      }
+    })();
+    const unsubscribe = subscribeBatteryUpdates(({ level, state }) => {
+      if (level !== undefined) setBatteryLevel(level);
+      if (state !== undefined) setBatteryState(state);
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, []);
+
   const handleSignOut = async () => {
     setTeam(null);
     await signOut(auth);
   };
+
+  const batteryPercent = batteryLevel >= 0 ? Math.round(batteryLevel * 100) : null;
+  const isLow = batteryPercent !== null && batteryPercent < 20;
 
   return (
     <View style={styles.container}>
@@ -36,6 +70,31 @@ export default function SettingsScreen() {
       <View style={styles.card}>
         <Text style={styles.label}>Account</Text>
         <Text style={styles.value}>{user?.email ?? '—'}</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>Device Status</Text>
+        {batteryPercent === null ? (
+          <Text style={styles.unavailable}>Battery info unavailable on web</Text>
+        ) : (
+          <>
+            <View style={styles.batteryRow}>
+              <Ionicons
+                name={batteryStateIcon(batteryState) as any}
+                size={18}
+                color={isLow ? '#ef5350' : '#4fc3f7'}
+                style={styles.batteryIcon}
+              />
+              <Text style={[styles.batteryValue, isLow && styles.batteryLow]}>
+                Battery: {batteryPercent}%
+              </Text>
+            </View>
+            <Text style={styles.batteryState}>{batteryStateLabel(batteryState)}</Text>
+            {isLow && (
+              <Text style={styles.lowWarning}>Low battery — plug in soon</Text>
+            )}
+          </>
+        )}
       </View>
 
       <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
@@ -76,6 +135,38 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#90a4ae',
     marginTop: 2,
+  },
+  batteryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  batteryIcon: {
+    marginRight: 6,
+  },
+  batteryValue: {
+    fontSize: 16,
+    color: '#4fc3f7',
+    fontWeight: '600',
+  },
+  batteryLow: {
+    color: '#ef5350',
+  },
+  batteryState: {
+    fontSize: 13,
+    color: '#90a4ae',
+    marginTop: 4,
+  },
+  lowWarning: {
+    fontSize: 13,
+    color: '#ef5350',
+    fontWeight: '600',
+    marginTop: 6,
+  },
+  unavailable: {
+    fontSize: 14,
+    color: '#546e7a',
+    marginTop: 4,
   },
   signOutBtn: {
     marginTop: 12,
