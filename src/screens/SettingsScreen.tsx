@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Battery from 'expo-battery';
 import { signOut } from 'firebase/auth';
@@ -13,6 +13,7 @@ import {
   batteryStateLabel,
   batteryStateIcon,
 } from '../services/battery';
+import { scheduleLeaderboardNotification } from '../services/notifications';
 
 export default function SettingsScreen() {
   const { user } = useAuthStore();
@@ -49,7 +50,7 @@ export default function SettingsScreen() {
   const isLow = batteryPercent !== null && batteryPercent < 20;
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.card}>
         <Text style={styles.label}>Team</Text>
         <Text style={styles.value}>{team?.name ?? '—'}</Text>
@@ -97,10 +98,19 @@ export default function SettingsScreen() {
         )}
       </View>
 
+      {/* Dev-only QA aid — verifies notification UX without needing a second user */}
+      <TouchableOpacity
+        style={styles.testBtn}
+        onPress={() => scheduleLeaderboardNotification('Team Avengers', 234)}
+      >
+        <Ionicons name="notifications-outline" size={16} color="#a5d6a7" style={styles.testBtnIcon} />
+        <Text style={styles.testBtnText}>Test Notification</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
         <Text style={styles.signOutText}>Sign Out</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -108,6 +118,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0d1b2a',
+  },
+  content: {
     padding: 24,
     paddingTop: 16,
   },
@@ -168,8 +180,26 @@ const styles = StyleSheet.create({
     color: '#546e7a',
     marginTop: 4,
   },
+  testBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    backgroundColor: '#1c2e3f',
+    borderRadius: 10,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: '#2e4a30',
+  },
+  testBtnIcon: {
+    marginRight: 8,
+  },
+  testBtnText: {
+    color: '#a5d6a7',
+    fontWeight: '700',
+    fontSize: 15,
+  },
   signOutBtn: {
-    marginTop: 12,
     backgroundColor: '#e57373',
     borderRadius: 10,
     paddingVertical: 14,
