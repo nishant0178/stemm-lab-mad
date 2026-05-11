@@ -30,6 +30,13 @@ export type ReactionBoardScore = {
   attemptedAt: Timestamp;
 };
 
+export type LeaderboardEntry = {
+  rank: number;
+  teamId: string;
+  teamName: string;
+  bestReactionTimeMs: number;
+};
+
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
