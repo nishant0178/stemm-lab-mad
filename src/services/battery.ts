@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import * as Battery from 'expo-battery';
 
 export type BatteryInfo = {
@@ -6,16 +7,19 @@ export type BatteryInfo = {
 };
 
 export async function getBatteryLevel(): Promise<number> {
+  if (Platform.OS === 'web') return -1;
   return Battery.getBatteryLevelAsync();
 }
 
 export async function getBatteryState(): Promise<Battery.BatteryState> {
+  if (Platform.OS === 'web') return Battery.BatteryState.UNKNOWN;
   return Battery.getBatteryStateAsync();
 }
 
 export function subscribeBatteryUpdates(
   onUpdate: (info: Partial<BatteryInfo>) => void,
 ): () => void {
+  if (Platform.OS === 'web') return () => {};
   const levelSub = Battery.addBatteryLevelListener(({ batteryLevel }) => {
     onUpdate({ level: batteryLevel });
   });

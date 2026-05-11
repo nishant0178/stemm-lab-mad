@@ -75,7 +75,7 @@ export default function SettingsScreen() {
       <View style={styles.card}>
         <Text style={styles.label}>Device Status</Text>
         {batteryPercent === null ? (
-          <Text style={styles.unavailable}>Battery info unavailable on web</Text>
+          <Text style={styles.unavailable}>Battery info unavailable on this platform</Text>
         ) : (
           <>
             <View style={styles.batteryRow}>
