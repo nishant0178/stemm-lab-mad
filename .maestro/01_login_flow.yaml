@@ -1,0 +1,22 @@
+appId: host.exp.exponent
+---
+- launchApp
+# Wait for app to load — Expo Go takes a moment
+- waitForAnimationToEnd
+
+# If already signed in, Home will show immediately; otherwise enter credentials
+- runFlow:
+    when:
+      visible: "Sign In"
+    flow:
+      - tapOn: "Email"
+      - inputText: "${TEST_EMAIL}"
+      - tapOn: "Password"
+      - inputText: "${TEST_PASSWORD}"
+      - tapOn: "Sign In"
+      - waitForAnimationToEnd
+
+# Verify Home screen
+- assertVisible: "Hey,"
+- assertVisible: "Reaction Board"
+- assertVisible: "Vibration Meter"
