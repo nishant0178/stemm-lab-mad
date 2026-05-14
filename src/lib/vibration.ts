@@ -1,6 +1,6 @@
-/** Magnitude of acceleration with gravity baseline removed. Can be negative during deceleration. */
+/** Euclidean distance from the gravity rest vector (0,0,1). Correctly removes gravity baseline. */
 export const calculateMagnitude = (x: number, y: number, z: number): number =>
-  Math.sqrt(x * x + y * y + z * z) - 1;
+  Math.sqrt(x * x + y * y + (z - 1) * (z - 1));
 
 /** Peak absolute magnitude across the recording session. Lower = steadier.
  *  Using peak (not RMS) so a single drop or jerk isn't averaged away. */
