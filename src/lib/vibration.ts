@@ -10,8 +10,8 @@ export const calculateMotionScore = (magnitudes: number[]): number => {
 };
 
 export const describeScore = (score: number): string => {
-  if (score < 0.5) return 'Rock solid! 🪨';
-  if (score < 1.5) return 'Pretty steady 👍';
-  if (score < 3)   return 'A bit shaky 🌊';
+  if (score < 0.05) return 'Rock solid! 🪨';
+  if (score < 0.3)  return 'Pretty steady 👍';
+  if (score < 1.0)  return 'A bit shaky 🌊';
   return 'Wobbly! 🤪';
 };
