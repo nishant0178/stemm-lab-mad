@@ -1,0 +1,42 @@
+appId: host.exp.exponent
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Sign in if needed
+- runFlow:
+    when:
+      visible: "Sign In"
+    flow:
+      - tapOn: "Email"
+      - inputText: "${TEST_EMAIL}"
+      - tapOn: "Password"
+      - inputText: "${TEST_PASSWORD}"
+      - tapOn: "Sign In"
+      - waitForAnimationToEnd
+
+# Launch Reaction Board from Home
+- assertVisible: "Reaction Board"
+- tapOn:
+    text: "Play"
+    index: 0  # first Play button = Reaction Board
+
+# Idle screen
+- assertVisible: "Tap to Start"
+- tapOn: "Tap to Start"
+
+# Waiting phase — red background, must NOT tap
+# Random delay is 2–5s; wait 5.5s to be safe
+- wait: 5500
+
+# Green phase should now be active — tap center
+- tapOn:
+    point: "50%,50%"
+
+# Result screen
+- assertVisible: "Your reaction time"
+- assertVisible: "ms"
+
+# Save the score
+- tapOn: "Save Score"
+- assertVisible: "Saved"
