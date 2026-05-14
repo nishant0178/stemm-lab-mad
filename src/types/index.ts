@@ -13,11 +13,13 @@ export type Team = {
   members: string[];
   yearLevel: string;
   createdBy: string;
+  location?: { latitude: number; longitude: number; lastUpdated: number };
 };
 
 export type MainTabParamList = {
   Home: undefined;
   Leaderboard: undefined;
+  Map: undefined;
   Settings: undefined;
 };
 

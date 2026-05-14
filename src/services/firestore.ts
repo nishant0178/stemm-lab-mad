@@ -2,6 +2,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  doc,
+  updateDoc,
   query,
   where,
   serverTimestamp,
@@ -19,6 +21,20 @@ export async function createTeam(
     createdAt: serverTimestamp(),
   });
   return { ...data, id: ref.id };
+}
+
+export async function getAllTeams(): Promise<Team[]> {
+  const snap = await getDocs(collection(db, 'teams'));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Team, 'id'>) }));
+}
+
+export async function updateTeamLocation(
+  teamId: string,
+  location: { latitude: number; longitude: number },
+): Promise<void> {
+  await updateDoc(doc(db, 'teams', teamId), {
+    location: { ...location, lastUpdated: Date.now() },
+  });
 }
 
 export async function getTeamByUser(uid: string): Promise<Team | null> {
