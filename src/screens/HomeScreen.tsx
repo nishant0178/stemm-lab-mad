@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTeamStore } from '../store/teamStore';
 import { RootStackParamList } from '../types';
 import { getRecentScores, LocalScore } from '../services/localCache';
+import BannerAdComponent from '../components/BannerAd';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -91,6 +92,8 @@ export default function HomeScreen() {
           </View>
         ))
       )}
+
+      <BannerAdComponent />
     </ScrollView>
   );
 }
