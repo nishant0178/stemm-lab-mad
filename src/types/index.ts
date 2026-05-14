@@ -30,6 +30,14 @@ export type ReactionBoardScore = {
   attemptedAt: Timestamp;
 };
 
+export type VibrationScore = {
+  teamId: string;
+  userId: string;
+  activity: 'vibration';
+  motionScore: number;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;

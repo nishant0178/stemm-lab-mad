@@ -7,7 +7,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { Team, ReactionBoardScore, LeaderboardEntry } from '../types';
+import { Team, ReactionBoardScore, VibrationScore, LeaderboardEntry } from '../types';
 
 // ─── Teams ────────────────────────────────────────────────────────────────────
 
@@ -33,6 +33,16 @@ export async function getTeamByUser(uid: string): Promise<Team | null> {
 
 export async function saveReactionBoardScore(
   score: Omit<ReactionBoardScore, 'attemptedAt'>,
+): Promise<string> {
+  const ref = await addDoc(collection(db, 'scores'), {
+    ...score,
+    attemptedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export async function saveVibrationScore(
+  score: Omit<VibrationScore, 'attemptedAt'>,
 ): Promise<string> {
   const ref = await addDoc(collection(db, 'scores'), {
     ...score,
