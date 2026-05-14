@@ -6,10 +6,19 @@ import { getAllTeams, getLeaderboard } from '../services/firestore';
 import { getCurrentLocation } from '../services/location';
 import { Team } from '../types';
 
-// react-native-maps is not available on web — require conditionally
-const RNMaps = Platform.OS !== 'web' ? require('react-native-maps') : null;
-const MapView = RNMaps?.default ?? null;
-const Marker = RNMaps?.Marker ?? null;
+// react-native-maps requires a custom native binary — not available in Expo Go.
+// Wrap in try-catch so the module failure is caught gracefully.
+let MapView: any = null;
+let Marker: any = null;
+try {
+  if (Platform.OS !== 'web') {
+    const maps = require('react-native-maps');
+    MapView = maps.default;
+    Marker = maps.Marker;
+  }
+} catch {
+  // Will render fallback below
+}
 
 const MELBOURNE = {
   latitude: -37.8136,
@@ -58,12 +67,13 @@ export default function MapScreen() {
     }, []),
   );
 
-  if (Platform.OS === 'web') {
+  if (!MapView) {
     return (
       <View style={styles.fallback}>
-        <Text style={styles.fallbackTitle}>Map view available on mobile only.</Text>
+        <Text style={styles.fallbackTitle}>Map unavailable in Expo Go</Text>
         <Text style={styles.fallbackSub}>
-          Open the app on your phone to see team locations.
+          react-native-maps requires a custom native build.{'\n'}
+          The map works in the production APK.
         </Text>
       </View>
     );
