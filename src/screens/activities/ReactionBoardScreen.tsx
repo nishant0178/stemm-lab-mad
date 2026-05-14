@@ -4,8 +4,9 @@ import { getRandomDelay, calculateReactionTime } from '../../lib/reactionBoard';
 import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore } from '../../store/teamStore';
-import { saveReactionBoardScore } from '../../services/firestore';
+import { saveReactionBoardScore, updateTeamLocation } from '../../services/firestore';
 import { saveScoreLocally } from '../../services/localCache';
+import { getCurrentLocation } from '../../services/location';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
@@ -144,6 +145,9 @@ export default function ReactionBoardScreen() {
                   saveScoreLocally('reactionBoard', reactionTime).catch(
                     (e) => console.warn('[ReactionBoard] Local cache save failed:', e),
                   );
+                  getCurrentLocation().then((loc) => {
+                    if (loc) updateTeamLocation(team.id, loc).catch(() => {});
+                  }).catch(() => {});
                   setSaved(true);
                 } catch {
                   Alert.alert('Error', 'Could not save score. Please try again.');

@@ -5,8 +5,9 @@ import { calculateMagnitude, calculateMotionScore, describeScore } from '../../l
 import { useGameStore } from '../../store/gameStore';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore } from '../../store/teamStore';
-import { saveVibrationScore } from '../../services/firestore';
+import { saveVibrationScore, updateTeamLocation } from '../../services/firestore';
 import { saveScoreLocally } from '../../services/localCache';
+import { getCurrentLocation } from '../../services/location';
 
 type Phase = 'idle' | 'recording' | 'result';
 
@@ -136,6 +137,9 @@ export default function VibrationScreen() {
                   saveScoreLocally('vibration', motionScore).catch(
                     (e) => console.warn('[VibrationScreen] local cache save failed:', e),
                   );
+                  getCurrentLocation().then((loc) => {
+                    if (loc) updateTeamLocation(team.id, loc).catch(() => {});
+                  }).catch(() => {});
                   setSaved(true);
                 } catch {
                   Alert.alert('Error', 'Could not save score. Please try again.');
