@@ -1,9 +1,15 @@
 {
   "expo": {
+    "react-native-google-mobile-ads": {
+      "android_app_id": "ca-app-pub-3940256099942544~3347511713",
+      "ios_app_id": "ca-app-pub-3940256099942544~1458002511"
+    },
     "name": "stemm-lab-mad-scaffold",
     "slug": "stemm-lab-mad-scaffold",
     "version": "1.0.0",
-    "runtimeVersion": { "policy": "sdkVersion" },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -38,6 +44,12 @@
           "iosAppId": "ca-app-pub-3940256099942544~1458002511"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f5b84d30-cdce-427b-91ac-965e61f4ead0"
+      }
+    },
+    "owner": "nishant0178"
   }
 }
