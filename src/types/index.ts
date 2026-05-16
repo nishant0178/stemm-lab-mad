@@ -66,6 +66,15 @@ export type EarthquakeScore = {
   attemptedAt: Timestamp;
 };
 
+export type HumanPerformanceScore = {
+  teamId: string;
+  userId: string;
+  activity: 'humanPerformance';
+  smoothnessScore: number;
+  movementType: string;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
