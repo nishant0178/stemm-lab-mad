@@ -40,6 +40,15 @@ export type VibrationScore = {
   attemptedAt: Timestamp;
 };
 
+export type SoundScore = {
+  teamId: string;
+  userId: string;
+  activity: 'soundPollution';
+  averageDb: number;
+  peakDb: number;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
