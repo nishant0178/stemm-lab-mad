@@ -75,6 +75,21 @@ export type HumanPerformanceScore = {
   attemptedAt: Timestamp;
 };
 
+export type ParachuteScore = {
+  teamId: string;
+  userId: string;
+  activity: 'parachute';
+  designName: string;
+  height: number;
+  fallTime: number;
+  mass: number;
+  finalVelocity: number;
+  acceleration: number;
+  dragForce: number;
+  gForce?: number;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
