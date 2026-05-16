@@ -9,7 +9,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { Team, ReactionBoardScore, VibrationScore, SoundScore, BreathingScore, LeaderboardEntry } from '../types';
+import { Team, ReactionBoardScore, VibrationScore, SoundScore, BreathingScore, EarthquakeScore, LeaderboardEntry } from '../types';
 
 // ─── Teams ────────────────────────────────────────────────────────────────────
 
@@ -79,6 +79,16 @@ export async function saveSoundScore(
 
 export async function saveBreathingScore(
   score: Omit<BreathingScore, 'attemptedAt'>,
+): Promise<string> {
+  const ref = await addDoc(collection(db, 'scores'), {
+    ...score,
+    attemptedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export async function saveEarthquakeScore(
+  score: Omit<EarthquakeScore, 'attemptedAt'>,
 ): Promise<string> {
   const ref = await addDoc(collection(db, 'scores'), {
     ...score,

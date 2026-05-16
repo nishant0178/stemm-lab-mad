@@ -57,6 +57,15 @@ export type BreathingScore = {
   attemptedAt: Timestamp;
 };
 
+export type EarthquakeScore = {
+  teamId: string;
+  userId: string;
+  activity: 'earthquake';
+  stabilityScore: number;
+  designName: string;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
