@@ -14,6 +14,7 @@ jest.mock('firebase/firestore', () => ({
 }));
 
 jest.mock('../../src/config/firebase', () => ({ db: 'mock-db' }));
+jest.mock('expo-constants', () => ({ default: { expoConfig: { extra: { firebase: {} } } } }));
 
 const mockGetDocs = getDocs as jest.MockedFunction<typeof getDocs>;
 
@@ -66,7 +67,7 @@ describe('getLeaderboard', () => {
     const result = await getLeaderboard('reactionBoard', 10);
     expect(result).toHaveLength(2);
     const teamA = result.find((e) => e.teamId === 'team-A');
-    expect(teamA?.bestReactionTimeMs).toBe(250);
+    expect(teamA?.bestScore).toBe(250);
   });
 
   test('returns ranked entries sorted ascending by best time', async () => {

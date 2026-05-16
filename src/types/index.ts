@@ -110,7 +110,8 @@ export type LeaderboardEntry = {
   rank: number;
   teamId: string;
   teamName: string;
-  bestReactionTimeMs: number;
+  bestScore: number;
+  scoreLabel: string;
 };
 
 export type RootStackParamList = {
