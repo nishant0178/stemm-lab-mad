@@ -20,8 +20,8 @@ export default function App() {
   const watcherUnsubRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    initDatabase().catch(() => {});
-    requestNotificationPermissions().catch(() => {});
+    initDatabase().catch((e) => console.error('[App] initDatabase failed:', e));
+    requestNotificationPermissions().catch((e) => console.error('[App] notifications init failed:', e));
   }, []);
 
   // Start/stop leaderboard watcher whenever auth+team state changes
