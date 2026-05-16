@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTeamStore } from '../store/teamStore';
 import { getAllTeams, getLeaderboard } from '../services/firestore';
@@ -92,28 +93,24 @@ export default function MapScreen() {
   const teamsWithLocation = teams.filter((t) => t.location);
 
   return (
-    <MapView style={styles.map} provider={PROVIDER_DEFAULT} initialRegion={initialRegion}>
-      {teamsWithLocation.map((team) => {
-        const isMe = team.id === myTeam?.id;
-        const best = bestTimes.get(team.id);
-        return (
-          <Marker
-            key={team.id}
-            coordinate={team.location!}
-            title={team.name + (isMe ? ' (you)' : '')}
-            description={best != null ? `Best: ${best}ms` : 'No scores yet'}
-            pinColor={isMe ? '#4fc3f7' : '#ef5350'}
-          />
-        );
-      })}
-    </MapView>
+    <View style={styles.fallbackContainer}>
+      <Ionicons name="map-outline" size={80} color="#546e7a" />
+      <Text style={styles.fallbackHeading}>Map view</Text>
+      <Text style={styles.fallbackText}>
+        Map rendering requires a Google Maps API key with an active billing account, which is
+        outside the scope of this academic build.
+      </Text>
+      <Text style={styles.fallbackText}>
+        The location data layer is fully functional — team GPS coordinates are being captured on
+        every score save and stored in Firestore.{' '}
+        {teamsWithLocation.length} team{teamsWithLocation.length === 1 ? '' : 's'} currently{' '}
+        {teamsWithLocation.length === 1 ? 'has' : 'have'} location data saved.
+      </Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  map: {
-    flex: 1,
-  },
   loadingWrap: {
     flex: 1,
     backgroundColor: '#0d1b2a',
@@ -138,5 +135,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#546e7a',
     textAlign: 'center',
+  },
+  fallbackContainer: {
+    flex: 1,
+    backgroundColor: '#0d1b2a',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  fallbackHeading: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#fff',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  fallbackText: {
+    textAlign: 'center',
+    color: '#546e7a',
+    marginVertical: 8,
+    lineHeight: 22,
+    fontSize: 14,
   },
 });
