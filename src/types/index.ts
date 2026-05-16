@@ -49,6 +49,14 @@ export type SoundScore = {
   attemptedAt: Timestamp;
 };
 
+export type BreathingScore = {
+  teamId: string;
+  userId: string;
+  activity: 'breathing';
+  breathsPerMinute: number;
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
