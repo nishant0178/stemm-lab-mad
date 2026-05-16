@@ -10,11 +10,13 @@ import { Team } from '../types';
 // Wrap in try-catch so the module failure is caught gracefully.
 let MapView: any = null;
 let Marker: any = null;
+let PROVIDER_DEFAULT: any = null;
 try {
   if (Platform.OS !== 'web') {
     const maps = require('react-native-maps');
     MapView = maps.default;
     Marker = maps.Marker;
+    PROVIDER_DEFAULT = maps.PROVIDER_DEFAULT;
   }
 } catch {
   // Will render fallback below
@@ -90,7 +92,7 @@ export default function MapScreen() {
   const teamsWithLocation = teams.filter((t) => t.location);
 
   return (
-    <MapView style={styles.map} initialRegion={initialRegion}>
+    <MapView style={styles.map} provider={PROVIDER_DEFAULT} initialRegion={initialRegion}>
       {teamsWithLocation.map((team) => {
         const isMe = team.id === myTeam?.id;
         const best = bestTimes.get(team.id);
