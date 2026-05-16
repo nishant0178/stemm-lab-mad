@@ -93,7 +93,15 @@ export default function HomeScreen() {
         ))
       )}
 
-      <BannerAdComponent />
+      {/*
+        AdMob banner deferred — react-native-google-mobile-ads has a known issue
+        with Fabric architecture in Expo SDK 54 that crashes the app on banner render
+        (IndexOutOfBoundsException in ReactNativeGoogleMobileAdsBannerAdViewManager).
+        The integration code is preserved in src/components/BannerAd.tsx and the
+        package is installed and configured — for production launch this would
+        require either disabling Fabric for AdMob or waiting for an SDK update.
+      */}
+      {/* <BannerAdComponent /> */}
     </ScrollView>
   );
 }
