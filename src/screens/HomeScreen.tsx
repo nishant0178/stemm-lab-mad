@@ -7,25 +7,27 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTeamStore } from '../store/teamStore';
 import { RootStackParamList } from '../types';
 import { getRecentScores, LocalScore } from '../services/localCache';
-import BannerAdComponent from '../components/BannerAd';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
-const ACTIVITIES = [
-  {
-    id: 'ReactionBoard' as const,
-    title: 'Reaction Board',
-    description: 'Test your team\'s reaction time — tap when you see the signal!',
-    icon: 'flash' as const,
-    color: '#4fc3f7',
-  },
-  {
-    id: 'Vibration' as const,
-    title: 'Vibration Meter',
-    description: 'Measure vibrations around you using the phone\'s accelerometer.',
-    icon: 'pulse' as const,
-    color: '#a5d6a7',
-  },
+type Activity = {
+  id: keyof RootStackParamList;
+  title: string;
+  description: string;
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+};
+
+const ENGINEERING: Activity[] = [
+  { id: 'ParachuteScreen', title: 'Parachute Drop', description: 'Measure parachute landing forces', icon: 'airplane-outline' },
+  { id: 'SoundScreen', title: 'Sound Pollution Hunter', description: 'Track ambient noise levels', icon: 'volume-high-outline' },
+  { id: 'HandFanScreen', title: 'Hand Fan Challenge', description: 'Compare fan designs for airflow', icon: 'leaf-outline' },
+  { id: 'EarthquakeScreen', title: 'Earthquake Structure', description: 'Build the tallest quake-proof structure', icon: 'pulse-outline' },
+];
+
+const HEALTH: Activity[] = [
+  { id: 'HumanPerformanceScreen', title: 'Human Performance', description: 'Measure exercise impact on reaction time', icon: 'body-outline' },
+  { id: 'ReactionBoard', title: 'Reaction Board', description: 'Test team reaction speed', icon: 'flash-outline' },
+  { id: 'BreathingScreen', title: 'Breathing Pace', description: 'Analyse breathing rate at rest and exercise', icon: 'heart-outline' },
 ];
 
 function timeAgo(ms: number): string {
@@ -39,6 +41,21 @@ function timeAgo(ms: number): string {
 function activityLabel(activity: string): string {
   if (activity === 'reactionBoard') return 'Reaction Board';
   return activity;
+}
+
+function ActivityCard({ activity, onPress }: { activity: Activity; onPress: () => void }) {
+  return (
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
+      <View style={styles.iconWrap}>
+        <Ionicons name={activity.icon} size={24} color="#2E75B6" />
+      </View>
+      <View style={styles.cardBody}>
+        <Text style={styles.cardTitle}>{activity.title}</Text>
+        <Text style={styles.cardDesc} numberOfLines={1}>{activity.description}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color="#ccc" />
+    </TouchableOpacity>
+  );
 }
 
 export default function HomeScreen() {
@@ -57,27 +74,19 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.greeting}>Hey, {team?.name ?? 'Team'} 👋</Text>
-      <Text style={styles.sub}>Pick an activity to get started</Text>
+      <Text style={styles.sub}>Choose an activity to get started</Text>
 
-      {ACTIVITIES.map((activity) => (
-        <View key={activity.id} style={styles.card}>
-          <View style={[styles.iconWrap, { backgroundColor: activity.color + '22' }]}>
-            <Ionicons name={activity.icon} size={32} color={activity.color} />
-          </View>
-          <View style={styles.cardBody}>
-            <Text style={styles.cardTitle}>{activity.title}</Text>
-            <Text style={styles.cardDesc}>{activity.description}</Text>
-          </View>
-          <TouchableOpacity
-            style={[styles.playBtn, { backgroundColor: activity.color }]}
-            onPress={() => navigation.navigate(activity.id)}
-          >
-            <Text style={styles.playBtnText}>Play</Text>
-          </TouchableOpacity>
-        </View>
+      <Text style={styles.sectionHeading}>Engineering Challenges</Text>
+      {ENGINEERING.map((a) => (
+        <ActivityCard key={a.id} activity={a} onPress={() => navigation.navigate(a.id as any)} />
       ))}
 
-      <Text style={styles.sectionHeading}>Your Recent Scores</Text>
+      <Text style={[styles.sectionHeading, { marginTop: 20 }]}>Health &amp; Medical Sciences</Text>
+      {HEALTH.map((a) => (
+        <ActivityCard key={a.id} activity={a} onPress={() => navigation.navigate(a.id as any)} />
+      ))}
+
+      <Text style={[styles.sectionHeading, { marginTop: 20 }]}>Your Recent Scores</Text>
       {recentScores.length === 0 ? (
         <Text style={styles.emptyText}>No scores yet. Play to record one!</Text>
       ) : (
@@ -112,8 +121,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#0d1b2a',
   },
   content: {
-    padding: 24,
+    padding: 20,
     paddingTop: 16,
+    paddingBottom: 32,
   },
   greeting: {
     fontSize: 24,
@@ -124,23 +134,33 @@ const styles = StyleSheet.create({
   sub: {
     fontSize: 14,
     color: '#546e7a',
-    marginBottom: 24,
+    marginBottom: 20,
+  },
+  sectionHeading: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2E75B6',
+    marginBottom: 10,
   },
   card: {
-    backgroundColor: '#1c2e3f',
-    borderRadius: 14,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#263d54',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   iconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#e8f0fa',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -149,33 +169,13 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 4,
+    fontWeight: '600',
+    color: '#1a1a2e',
+    marginBottom: 2,
   },
   cardDesc: {
-    fontSize: 12,
-    color: '#90a4ae',
-    lineHeight: 16,
-  },
-  playBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  playBtnText: {
-    color: '#0d1b2a',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  sectionHeading: {
     fontSize: 13,
-    fontWeight: '700',
-    color: '#546e7a',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginTop: 8,
-    marginBottom: 12,
+    color: '#666',
   },
   emptyText: {
     fontSize: 14,

@@ -56,4 +56,10 @@ export type RootStackParamList = {
   Vibration: undefined;
   Map: undefined;
   Results: { activityId: string };
+  ParachuteScreen: undefined;
+  SoundScreen: undefined;
+  HandFanScreen: undefined;
+  EarthquakeScreen: undefined;
+  HumanPerformanceScreen: undefined;
+  BreathingScreen: undefined;
 };
