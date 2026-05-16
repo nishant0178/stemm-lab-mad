@@ -90,6 +90,22 @@ export type ParachuteScore = {
   attemptedAt: Timestamp;
 };
 
+export type HandFanTrial = {
+  designName: string;
+  distanceCm: number;
+  angleDegrees: number;
+  force: number;
+};
+
+export type HandFanScore = {
+  teamId: string;
+  userId: string;
+  activity: 'handFan';
+  material: string;
+  trials: HandFanTrial[];
+  attemptedAt: Timestamp;
+};
+
 export type LeaderboardEntry = {
   rank: number;
   teamId: string;
