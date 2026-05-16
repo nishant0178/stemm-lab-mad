@@ -43,6 +43,14 @@
       "expo-sqlite"
     ],
     "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyDf5c6FSFoflXrd2P1dGCG93OR_BMtcPq0",
+        "authDomain": "stemm-lab-mad.firebaseapp.com",
+        "projectId": "stemm-lab-mad",
+        "storageBucket": "stemm-lab-mad.firebasestorage.app",
+        "messagingSenderId": "823922610225",
+        "appId": "1:823922610225:web:67c60ce0c35f8753a6c510"
+      },
       "eas": {
         "projectId": "f5b84d30-cdce-427b-91ac-965e61f4ead0"
       }
