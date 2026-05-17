@@ -67,7 +67,7 @@ export default function LeaderboardScreen() {
 
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
-    content: { padding: spacing.xl, paddingTop: spacing.lg, flexGrow: 1 },
+    content: { padding: spacing.xl, paddingTop: spacing.lg },
     heading: { ...typography.h1, color: colors.text, marginBottom: spacing.lg },
     chipScroll: { marginBottom: spacing.xs },
     chipRow: { gap: 8, paddingVertical: 4, paddingHorizontal: 4 },
