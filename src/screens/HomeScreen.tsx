@@ -7,7 +7,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTeamStore } from '../store/teamStore';
 import { RootStackParamList } from '../types';
 import { getRecentScores, LocalScore } from '../services/localCache';
-import { colors, spacing, typography, radius, shadow } from '../theme/spacing';
+import { useTheme } from '../theme/ThemeContext';
+import { spacing, typography, radius, shadow } from '../theme/spacing';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -45,6 +46,33 @@ function activityLabel(activity: string): string {
 }
 
 function ActivityCard({ activity, onPress }: { activity: Activity; onPress: () => void }) {
+  const { colors } = useTheme();
+  const styles = StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.lg,
+      marginBottom: spacing.md,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      ...shadow.card,
+    },
+    iconWrap: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.md,
+      backgroundColor: `${colors.primary}1F`,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    cardBody: { flex: 1 },
+    cardTitle: { ...typography.h3, color: colors.text, marginBottom: 2 },
+    cardDesc: { ...typography.caption, color: colors.textSecondary },
+  });
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
       <View style={styles.iconWrap}>
@@ -60,6 +88,7 @@ function ActivityCard({ activity, onPress }: { activity: Activity; onPress: () =
 }
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
   const navigation = useNavigation<NavProp>();
   const { team } = useTeamStore();
   const [recentScores, setRecentScores] = useState<LocalScore[]>([]);
@@ -71,6 +100,25 @@ export default function HomeScreen() {
         .catch(() => setRecentScores([]));
     }, []),
   );
+
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: { padding: spacing.xl, paddingTop: spacing.lg, paddingBottom: spacing.xxl },
+    greeting: { ...typography.display, color: colors.text, marginBottom: spacing.xs },
+    sub: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xl },
+    sectionHeading: {
+      ...typography.label, color: colors.accent, marginBottom: spacing.md,
+    },
+    emptyText: { ...typography.body, color: colors.textMuted, textAlign: 'center', paddingVertical: spacing.lg },
+    scoreRow: {
+      flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
+      borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    scoreIcon: { marginRight: spacing.sm },
+    scoreText: { ...typography.caption, color: colors.textSecondary, flex: 1 },
+    scoreMs: { color: colors.accent, fontWeight: '700' as const },
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -102,100 +150,6 @@ export default function HomeScreen() {
           </View>
         ))
       )}
-
-      {/*
-        AdMob banner deferred — react-native-google-mobile-ads has a known issue
-        with Fabric architecture in Expo SDK 54 that crashes the app on banner render
-        (IndexOutOfBoundsException in ReactNativeGoogleMobileAdsBannerAdViewManager).
-        The integration code is preserved in src/components/BannerAd.tsx and the
-        package is installed and configured — for production launch this would
-        require either disabling Fabric for AdMob or waiting for an SDK update.
-      */}
-      {/* <BannerAdComponent /> */}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: spacing.xl,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xxl,
-  },
-  greeting: {
-    ...typography.display,
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  sub: {
-    ...typography.caption,
-    marginBottom: spacing.xl,
-  },
-  sectionHeading: {
-    ...typography.label,
-    color: colors.accent,
-    marginBottom: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    ...shadow.card,
-  },
-  iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.md,
-    backgroundColor: 'rgba(79, 195, 247, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardBody: {
-    flex: 1,
-  },
-  cardTitle: {
-    ...typography.h3,
-    color: colors.text,
-    marginBottom: 2,
-  },
-  cardDesc: {
-    ...typography.caption,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textMuted,
-    textAlign: 'center',
-    paddingVertical: spacing.lg,
-  },
-  scoreRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  scoreIcon: {
-    marginRight: spacing.sm,
-  },
-  scoreText: {
-    ...typography.caption,
-    flex: 1,
-  },
-  scoreMs: {
-    color: colors.accent,
-    fontWeight: '700',
-  },
-});

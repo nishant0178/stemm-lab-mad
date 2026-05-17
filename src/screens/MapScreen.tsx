@@ -6,9 +6,8 @@ import { useTeamStore } from '../store/teamStore';
 import { getAllTeams, getLeaderboard } from '../services/firestore';
 import { getCurrentLocation } from '../services/location';
 import { Team } from '../types';
+import { useTheme } from '../theme/ThemeContext';
 
-// react-native-maps requires a custom native binary — not available in Expo Go.
-// Wrap in try-catch so the module failure is caught gracefully.
 let MapView: any = null;
 let Marker: any = null;
 let PROVIDER_DEFAULT: any = null;
@@ -31,6 +30,7 @@ const MELBOURNE = {
 };
 
 export default function MapScreen() {
+  const { colors } = useTheme();
   const { team: myTeam } = useTeamStore();
   const [teams, setTeams] = useState<Team[]>([]);
   const [bestTimes, setBestTimes] = useState<Map<string, number>>(new Map());
@@ -70,6 +70,22 @@ export default function MapScreen() {
     }, []),
   );
 
+  const styles = StyleSheet.create({
+    loadingWrap: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
+    fallback: {
+      flex: 1, backgroundColor: colors.background, alignItems: 'center',
+      justifyContent: 'center', padding: 32,
+    },
+    fallbackTitle: { fontSize: 17, fontWeight: '700' as const, color: colors.text, textAlign: 'center', marginBottom: 8 },
+    fallbackSub: { fontSize: 14, color: colors.textMuted, textAlign: 'center' },
+    fallbackContainer: {
+      flex: 1, backgroundColor: colors.background, justifyContent: 'center',
+      alignItems: 'center', padding: 32,
+    },
+    fallbackHeading: { fontSize: 20, fontWeight: '600' as const, color: colors.text, marginTop: 16, marginBottom: 8 },
+    fallbackText: { textAlign: 'center', color: colors.textMuted, marginVertical: 8, lineHeight: 22, fontSize: 14 },
+  });
+
   if (!MapView) {
     return (
       <View style={styles.fallback}>
@@ -85,7 +101,7 @@ export default function MapScreen() {
   if (loading) {
     return (
       <View style={styles.loadingWrap}>
-        <ActivityIndicator size="large" color="#4fc3f7" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -94,7 +110,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.fallbackContainer}>
-      <Ionicons name="map-outline" size={80} color="#546e7a" />
+      <Ionicons name="map-outline" size={80} color={colors.textMuted} />
       <Text style={styles.fallbackHeading}>Map view</Text>
       <Text style={styles.fallbackText}>
         Map rendering requires a Google Maps API key with an active billing account, which is
@@ -109,52 +125,3 @@ export default function MapScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingWrap: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fallback: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  fallbackTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  fallbackSub: {
-    fontSize: 14,
-    color: '#546e7a',
-    textAlign: 'center',
-  },
-  fallbackContainer: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  fallbackHeading: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#fff',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  fallbackText: {
-    textAlign: 'center',
-    color: '#546e7a',
-    marginVertical: 8,
-    lineHeight: 22,
-    fontSize: 14,
-  },
-});

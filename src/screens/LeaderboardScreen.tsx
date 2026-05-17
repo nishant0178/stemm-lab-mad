@@ -14,7 +14,8 @@ import { getLeaderboard } from '../services/firestore';
 import { useTeamStore } from '../store/teamStore';
 import { ACTIVITY_CONFIGS } from '../lib/leaderboard';
 import { LeaderboardEntry } from '../types';
-import { colors, spacing, typography, radius, shadow } from '../theme/spacing';
+import { useTheme } from '../theme/ThemeContext';
+import { spacing, typography, radius, shadow } from '../theme/spacing';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -30,6 +31,7 @@ const ACTIVITY_ORDER = [
 ] as const;
 
 export default function LeaderboardScreen() {
+  const { colors, isDark } = useTheme();
   const { team } = useTeamStore();
   const [selectedActivity, setSelectedActivity] = useState<string>('reactionBoard');
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -63,6 +65,57 @@ export default function LeaderboardScreen() {
 
   const config = ACTIVITY_CONFIGS[selectedActivity];
 
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: { padding: spacing.xl, paddingTop: spacing.lg, flexGrow: 1 },
+    heading: { ...typography.h1, color: colors.text, marginBottom: spacing.lg },
+    chipScroll: { marginBottom: spacing.xs },
+    chipRow: { gap: 8, paddingVertical: 4, paddingHorizontal: 4 },
+    chip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      borderWidth: 1,
+      borderColor: isDark ? colors.border : '#dde3ea',
+      borderRadius: radius.full,
+      paddingVertical: 5,
+      paddingHorizontal: 11,
+      backgroundColor: isDark ? colors.surface : '#ffffff',
+      ...(isDark ? {} : {
+        shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 2,
+        shadowOffset: { width: 0, height: 1 }, elevation: 1,
+      }),
+    },
+    chipActive: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+      shadowColor: shadow.button.shadowColor,
+      shadowOpacity: shadow.button.shadowOpacity,
+      shadowRadius: shadow.button.shadowRadius,
+      shadowOffset: shadow.button.shadowOffset,
+      elevation: shadow.button.elevation,
+    },
+    chipText: { color: isDark ? colors.textSecondary : '#1a2e3f', fontSize: 11, fontWeight: '500' as const },
+    chipTextActive: { color: '#fff', fontWeight: '700' as const },
+    sub: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.md, marginBottom: spacing.xl },
+    spinner: { marginTop: spacing.xxxl },
+    emptyWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: spacing.xxxl },
+    emptyText: { ...typography.body, color: colors.textMuted, textAlign: 'center' },
+    row: {
+      flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface,
+      borderRadius: radius.lg, padding: spacing.md, marginBottom: spacing.sm,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    rowHighlight: { backgroundColor: `${colors.accent}14`, borderColor: colors.accent },
+    rank: { width: 40, fontSize: 18, fontWeight: '800' as const, color: colors.textMuted, textAlign: 'center' },
+    rankHighlight: { color: colors.accent },
+    teamInfo: { flex: 1, paddingHorizontal: spacing.md },
+    teamName: { ...typography.bodySemi, color: colors.text },
+    teamNameHighlight: { color: colors.accent },
+    score: { fontSize: 14, fontWeight: '800' as const, color: colors.textSecondary },
+    scoreHighlight: { color: colors.accent },
+  });
+
   return (
     <ScrollView
       style={styles.container}
@@ -77,7 +130,6 @@ export default function LeaderboardScreen() {
     >
       <Text style={styles.heading}>Leaderboard</Text>
 
-      {/* Activity selector */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -97,7 +149,7 @@ export default function LeaderboardScreen() {
               <Ionicons
                 name={cfg.icon as any}
                 size={12}
-                color={active ? '#fff' : '#64748b'}
+                color={active ? '#fff' : colors.textMuted}
                 style={{ marginRight: 4 }}
               />
               <Text style={[styles.chipText, active && styles.chipTextActive]}>
@@ -122,10 +174,7 @@ export default function LeaderboardScreen() {
           const isMyTeam = entry.teamId === team?.id;
           const medal = entry.rank <= 3 ? MEDALS[entry.rank - 1] : null;
           return (
-            <View
-              key={entry.teamId}
-              style={[styles.row, isMyTeam && styles.rowHighlight]}
-            >
+            <View key={entry.teamId} style={[styles.row, isMyTeam && styles.rowHighlight]}>
               <Text style={[styles.rank, isMyTeam && styles.rankHighlight]}>
                 {medal ?? `#${entry.rank}`}
               </Text>
@@ -145,124 +194,3 @@ export default function LeaderboardScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    padding: spacing.xl,
-    paddingTop: spacing.lg,
-    flexGrow: 1,
-  },
-  heading: {
-    ...typography.h1,
-    color: colors.text,
-    marginBottom: spacing.lg,
-  },
-  chipScroll: {
-    marginBottom: spacing.xs,
-  },
-  chipRow: {
-    gap: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 4,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#dde3ea',
-    borderRadius: radius.full,
-    paddingVertical: 5,
-    paddingHorizontal: 11,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
-  },
-  chipActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-    shadowColor: shadow.button.shadowColor,
-    shadowOpacity: shadow.button.shadowOpacity,
-    shadowRadius: shadow.button.shadowRadius,
-    shadowOffset: shadow.button.shadowOffset,
-    elevation: shadow.button.elevation,
-  },
-  chipText: {
-    color: '#1a2e3f',
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  chipTextActive: {
-    color: '#fff',
-    fontWeight: '700',
-  },
-  sub: {
-    ...typography.caption,
-    marginTop: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  spinner: {
-    marginTop: spacing.xxxl,
-  },
-  emptyWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing.xxxl,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  rowHighlight: {
-    backgroundColor: 'rgba(79, 195, 247, 0.08)',
-    borderColor: colors.accent,
-  },
-  rank: {
-    width: 40,
-    fontSize: 18,
-    fontWeight: '800',
-    color: colors.textMuted,
-    textAlign: 'center',
-  },
-  rankHighlight: {
-    color: colors.accent,
-  },
-  teamInfo: {
-    flex: 1,
-    paddingHorizontal: spacing.md,
-  },
-  teamName: {
-    ...typography.bodySemi,
-    color: colors.text,
-  },
-  teamNameHighlight: {
-    color: colors.accent,
-  },
-  score: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: colors.textSecondary,
-  },
-  scoreHighlight: {
-    color: colors.accent,
-  },
-});

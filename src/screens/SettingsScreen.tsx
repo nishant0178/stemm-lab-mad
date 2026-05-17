@@ -14,8 +14,11 @@ import {
   batteryStateIcon,
 } from '../services/battery';
 import { scheduleLeaderboardNotification } from '../services/notifications';
+import { useTheme } from '../theme/ThemeContext';
+import { spacing, radius } from '../theme/spacing';
 
 export default function SettingsScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team, setTeam } = useTeamStore();
 
@@ -48,6 +51,37 @@ export default function SettingsScreen() {
 
   const batteryPercent = batteryLevel >= 0 ? Math.round(batteryLevel * 100) : null;
   const isLow = batteryPercent !== null && batteryPercent < 20;
+
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: { padding: spacing.xl, paddingTop: spacing.lg },
+    card: {
+      backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
+      marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border,
+    },
+    label: {
+      fontSize: 11, color: colors.textMuted, textTransform: 'uppercase' as const,
+      letterSpacing: 0.8, marginBottom: 4,
+    },
+    value: { fontSize: 16, color: colors.text, fontWeight: '600' as const },
+    member: { fontSize: 15, color: colors.textSecondary, marginTop: 2 },
+    batteryRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+    batteryIcon: { marginRight: 6 },
+    batteryValue: { fontSize: 16, color: colors.accent, fontWeight: '600' as const },
+    batteryLow: { color: colors.danger },
+    batteryState: { fontSize: 13, color: colors.textSecondary, marginTop: 4 },
+    lowWarning: { fontSize: 13, color: colors.danger, fontWeight: '600' as const, marginTop: 6 },
+    unavailable: { fontSize: 14, color: colors.textMuted, marginTop: 4 },
+    testBtn: {
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+      marginBottom: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md,
+      paddingVertical: 14, borderWidth: 1, borderColor: colors.success,
+    },
+    testBtnIcon: { marginRight: 8 },
+    testBtnText: { color: colors.success, fontWeight: '700' as const, fontSize: 15 },
+    signOutBtn: { backgroundColor: colors.danger, borderRadius: radius.md, paddingVertical: 14, alignItems: 'center' },
+    signOutText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -83,7 +117,7 @@ export default function SettingsScreen() {
               <Ionicons
                 name={batteryStateIcon(batteryState) as any}
                 size={18}
-                color={isLow ? '#ef5350' : '#4fc3f7'}
+                color={isLow ? colors.danger : colors.accent}
                 style={styles.batteryIcon}
               />
               <Text style={[styles.batteryValue, isLow && styles.batteryLow]}>
@@ -91,19 +125,16 @@ export default function SettingsScreen() {
               </Text>
             </View>
             <Text style={styles.batteryState}>{batteryStateLabel(batteryState)}</Text>
-            {isLow && (
-              <Text style={styles.lowWarning}>Low battery — plug in soon</Text>
-            )}
+            {isLow && <Text style={styles.lowWarning}>Low battery — plug in soon</Text>}
           </>
         )}
       </View>
 
-      {/* Dev-only QA aid — verifies notification UX without needing a second user */}
       <TouchableOpacity
         style={styles.testBtn}
         onPress={() => scheduleLeaderboardNotification('Team Avengers', 234)}
       >
-        <Ionicons name="notifications-outline" size={16} color="#a5d6a7" style={styles.testBtnIcon} />
+        <Ionicons name="notifications-outline" size={16} color={colors.success} style={styles.testBtnIcon} />
         <Text style={styles.testBtnText}>Test Notification</Text>
       </TouchableOpacity>
 
@@ -113,101 +144,3 @@ export default function SettingsScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-  },
-  content: {
-    padding: 24,
-    paddingTop: 16,
-  },
-  card: {
-    backgroundColor: '#1c2e3f',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#263d54',
-  },
-  label: {
-    fontSize: 11,
-    color: '#546e7a',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
-  },
-  member: {
-    fontSize: 15,
-    color: '#90a4ae',
-    marginTop: 2,
-  },
-  batteryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  batteryIcon: {
-    marginRight: 6,
-  },
-  batteryValue: {
-    fontSize: 16,
-    color: '#4fc3f7',
-    fontWeight: '600',
-  },
-  batteryLow: {
-    color: '#ef5350',
-  },
-  batteryState: {
-    fontSize: 13,
-    color: '#90a4ae',
-    marginTop: 4,
-  },
-  lowWarning: {
-    fontSize: 13,
-    color: '#ef5350',
-    fontWeight: '600',
-    marginTop: 6,
-  },
-  unavailable: {
-    fontSize: 14,
-    color: '#546e7a',
-    marginTop: 4,
-  },
-  testBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-    backgroundColor: '#1c2e3f',
-    borderRadius: 10,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: '#2e4a30',
-  },
-  testBtnIcon: {
-    marginRight: 8,
-  },
-  testBtnText: {
-    color: '#a5d6a7',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  signOutBtn: {
-    backgroundColor: '#e57373',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  signOutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});
