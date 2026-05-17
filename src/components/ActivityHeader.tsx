@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../theme/spacing';
+import { colors, spacing, radius, typography } from '../theme/spacing';
 
 type Props = {
   title: string;
@@ -12,7 +12,9 @@ type Props = {
 export default function ActivityHeader({ title, icon, subtitle }: Props) {
   return (
     <View style={styles.container}>
-      <Ionicons name={icon} size={40} color={colors.primary} />
+      <View style={styles.iconWrap}>
+        <Ionicons name={icon} size={28} color={colors.accent} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle != null && <Text style={styles.subtitle}>{subtitle}</Text>}
     </View>
@@ -20,7 +22,28 @@ export default function ActivityHeader({ title, icon, subtitle }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginBottom: 24 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#ffffff', marginTop: 12, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: colors.textSecondary, marginTop: 4, textAlign: 'center', lineHeight: 20 },
+  container: {
+    alignItems: 'center',
+    marginBottom: spacing.xxl,
+  },
+  iconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.xl,
+    backgroundColor: 'rgba(79, 195, 247, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  title: {
+    ...typography.h1,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  subtitle: {
+    ...typography.caption,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });

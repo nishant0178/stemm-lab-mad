@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle,
 } from 'react-native';
-import { colors } from '../theme/spacing';
+import { colors, radius, shadow } from '../theme/spacing';
 
 type Props = {
   title: string;
@@ -21,7 +21,7 @@ export default function PrimaryButton({
       style={[styles.btn, isDisabled && styles.disabled, style]}
       onPress={onPress}
       disabled={isDisabled}
-      activeOpacity={0.8}
+      activeOpacity={0.85}
     >
       {loading
         ? <ActivityIndicator color="#fff" size="small" />
@@ -33,11 +33,26 @@ export default function PrimaryButton({
 const styles = StyleSheet.create({
   btn: {
     backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: radius.md,
     alignItems: 'center',
     alignSelf: 'stretch',
+    shadowColor: shadow.button.shadowColor,
+    shadowOpacity: shadow.button.shadowOpacity,
+    shadowRadius: shadow.button.shadowRadius,
+    shadowOffset: shadow.button.shadowOffset,
+    elevation: shadow.button.elevation,
   },
-  disabled: { backgroundColor: '#ccc' },
-  text: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  disabled: {
+    backgroundColor: '#37474f',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  text: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+  },
 });

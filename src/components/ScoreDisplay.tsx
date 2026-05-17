@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { colors, spacing, typography } from '../theme/spacing';
 
 type Props = {
   value: string | number;
@@ -20,9 +21,28 @@ export default function ScoreDisplay({ value, unit, label }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', marginVertical: 8 },
-  row: { flexDirection: 'row', alignItems: 'flex-end' },
-  value: { fontSize: 72, fontWeight: 'bold', color: '#ffffff' },
-  unit: { fontSize: 20, color: '#90a4ae', marginBottom: 12, marginLeft: 4 },
-  label: { fontSize: 14, color: '#666666', marginTop: 4, textAlign: 'center' },
+  container: {
+    alignItems: 'center',
+    marginVertical: spacing.lg,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  value: {
+    ...typography.scoreLarge,
+    color: colors.accent,
+  },
+  unit: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginBottom: 14,
+    marginLeft: spacing.xs,
+  },
+  label: {
+    ...typography.caption,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
 });
