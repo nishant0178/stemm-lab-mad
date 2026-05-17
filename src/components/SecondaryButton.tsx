@@ -2,7 +2,8 @@ import React from 'react';
 import {
   ActivityIndicator, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle,
 } from 'react-native';
-import { colors, radius } from '../theme/spacing';
+import { radius } from '../theme/spacing';
+import { useTheme } from '../theme/ThemeContext';
 
 type Props = {
   title: string;
@@ -15,7 +16,25 @@ type Props = {
 export default function SecondaryButton({
   title, onPress, disabled = false, loading = false, style,
 }: Props) {
+  const { colors } = useTheme();
   const isDisabled = disabled || loading;
+
+  const styles = StyleSheet.create({
+    btn: {
+      backgroundColor: 'transparent',
+      paddingVertical: 16,
+      paddingHorizontal: 24,
+      borderRadius: radius.md,
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+      alignItems: 'center',
+      alignSelf: 'stretch',
+    },
+    btnDisabled: { borderColor: colors.textMuted },
+    text: { color: colors.primary, fontSize: 16, fontWeight: '600' as const },
+    textDisabled: { color: colors.textMuted },
+  });
+
   return (
     <TouchableOpacity
       style={[styles.btn, isDisabled && styles.btnDisabled, style]}
@@ -29,19 +48,3 @@ export default function SecondaryButton({
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  btn: {
-    backgroundColor: 'transparent',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
-    borderColor: colors.primary,
-    alignItems: 'center',
-    alignSelf: 'stretch',
-  },
-  btnDisabled: { borderColor: '#37474f' },
-  text: { color: colors.primary, fontSize: 16, fontWeight: '600' },
-  textDisabled: { color: '#37474f' },
-});
