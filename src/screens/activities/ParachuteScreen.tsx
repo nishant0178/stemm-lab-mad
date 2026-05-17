@@ -1,8 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {
-  ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ScrollView, StyleSheet, Text, TextInput, View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../../store/authStore';
 import { useTeamStore } from '../../store/teamStore';
 import { saveParachuteScore } from '../../services/firestore';
@@ -17,13 +16,10 @@ import {
   calculateGForce,
   categoriseParachute,
 } from '../../lib/parachute';
-
-const SEVERITY_COLORS: Record<string, string> = {
-  excellent: '#2e7d32',
-  good: '#1565c0',
-  some: '#e65100',
-  none: '#b71c1c',
-};
+import ActivityHeader from '../../components/ActivityHeader';
+import PrimaryButton from '../../components/PrimaryButton';
+import SecondaryButton from '../../components/SecondaryButton';
+import ResultBadge from '../../components/ResultBadge';
 
 function isValidPositive(s: string): boolean {
   const n = parseFloat(s);
@@ -134,11 +130,7 @@ export default function ParachuteScreen() {
     <ScrollView ref={scrollRef} style={styles.container} contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled">
 
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <Ionicons name="airplane-outline" size={32} color="#2E75B6" />
-        <Text style={styles.headerTitle}>Parachute Drop Challenge</Text>
-      </View>
+      <ActivityHeader title="Parachute Drop Challenge" icon="airplane-outline" />
 
       {/* Inputs */}
       <View style={styles.section}>
@@ -209,13 +201,7 @@ export default function ParachuteScreen() {
           />
         </Field>
 
-        <TouchableOpacity
-          style={[styles.calcBtn, !canCalculate && styles.calcBtnDisabled]}
-          onPress={calculate}
-          disabled={!canCalculate}
-        >
-          <Text style={styles.calcBtnText}>Calculate</Text>
-        </TouchableOpacity>
+        <PrimaryButton title="Calculate" onPress={calculate} disabled={!canCalculate} />
       </View>
 
       {/* Results */}
@@ -242,26 +228,23 @@ export default function ParachuteScreen() {
             </View>
           ))}
 
-          <View style={[styles.badge, { backgroundColor: SEVERITY_COLORS[category.severity] }]}>
-            <Text style={styles.badgeText}>{category.label}</Text>
+          <View style={styles.badgeWrap}>
+            <ResultBadge label={category.label} severity={category.severity} />
           </View>
 
           {saved ? (
             <View style={styles.savedRow}>
-              <Ionicons name="checkmark-circle" size={20} color="#388e3c" />
               <Text style={styles.savedText}>Saved!</Text>
-              <TouchableOpacity style={styles.newTestBtn} onPress={reset}>
-                <Text style={styles.newTestBtnText}>New Test</Text>
-              </TouchableOpacity>
+              <SecondaryButton title="New Test" onPress={reset} style={styles.newTestBtn} />
             </View>
           ) : (
-            <TouchableOpacity
-              style={[styles.saveBtn, saving && { opacity: 0.6 }]}
+            <PrimaryButton
+              title={saving ? 'Saving…' : 'Save Result'}
               onPress={handleSave}
-              disabled={saving || !user || !team}
-            >
-              <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save Result'}</Text>
-            </TouchableOpacity>
+              loading={saving}
+              disabled={!user || !team}
+              style={styles.saveBtn}
+            />
           )}
         </View>
       )}
@@ -292,8 +275,6 @@ const fieldStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
   content: { padding: 20, paddingBottom: 48 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff', flex: 1 },
   section: {
     backgroundColor: '#1c2e3f', borderRadius: 14, padding: 18,
     marginBottom: 20, borderWidth: 1, borderColor: '#263d54',
@@ -307,12 +288,6 @@ const styles = StyleSheet.create({
     borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
     color: '#fff', fontSize: 15,
   },
-  calcBtn: {
-    backgroundColor: '#2E75B6', borderRadius: 10, paddingVertical: 13,
-    alignItems: 'center', marginTop: 6,
-  },
-  calcBtnDisabled: { backgroundColor: '#37474f' },
-  calcBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   resultRow: {
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', paddingVertical: 10,
@@ -321,21 +296,9 @@ const styles = StyleSheet.create({
   resultLabel: { fontSize: 14, color: '#90a4ae' },
   resultValue: { fontSize: 18, fontWeight: '700', color: '#fff' },
   resultUnit: { fontSize: 13, fontWeight: '400', color: '#546e7a' },
-  badge: {
-    borderRadius: 10, paddingVertical: 12, paddingHorizontal: 16,
-    marginTop: 16, alignItems: 'center',
-  },
-  badgeText: { color: '#fff', fontWeight: '700', fontSize: 14, textAlign: 'center' },
-  saveBtn: {
-    backgroundColor: '#2E75B6', borderRadius: 10, paddingVertical: 13,
-    alignItems: 'center', marginTop: 16,
-  },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
+  badgeWrap: { marginTop: 16 },
+  saveBtn: { marginTop: 16 },
   savedRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16, gap: 8 },
   savedText: { color: '#388e3c', fontWeight: '700', fontSize: 15, flex: 1 },
-  newTestBtn: {
-    borderWidth: 1, borderColor: '#2E75B6', borderRadius: 10,
-    paddingVertical: 10, paddingHorizontal: 20,
-  },
-  newTestBtnText: { color: '#2E75B6', fontWeight: '700', fontSize: 14 },
+  newTestBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: 20 },
 });

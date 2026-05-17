@@ -7,6 +7,10 @@ import { useTeamStore } from '../../store/teamStore';
 import { saveReactionBoardScore } from '../../services/firestore';
 import { saveScoreLocally } from '../../services/localCache';
 import { captureAndSaveTeamLocation } from '../../services/location';
+import ActivityHeader from '../../components/ActivityHeader';
+import PrimaryButton from '../../components/PrimaryButton';
+import SecondaryButton from '../../components/SecondaryButton';
+import ScoreDisplay from '../../components/ScoreDisplay';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
@@ -38,8 +42,35 @@ export default function ReactionBoardScreen() {
     }
   };
 
-  // Clear timer on unmount
   useEffect(() => clearTimer, []);
+
+  async function handleSave() {
+    if (!user || !team || reactionTime === null) return;
+    setSaving(true);
+    try {
+      await saveReactionBoardScore({
+        teamId: team.id,
+        userId: user.uid,
+        activity: 'reactionBoard',
+        reactionTimeMs: reactionTime,
+        bestEverMs: bestReactionTime ?? reactionTime,
+      });
+      console.log('[ReactionBoard] Firestore save done, calling saveScoreLocally', reactionTime);
+      saveScoreLocally('reactionBoard', reactionTime).catch(
+        (e) => console.warn('[ReactionBoard] Local cache save failed:', e),
+      );
+      try {
+        await captureAndSaveTeamLocation(team.id);
+      } catch (err) {
+        console.warn('[location] failed:', err);
+      }
+      setSaved(true);
+    } catch {
+      Alert.alert('Error', 'Could not save score. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const handlePress = () => {
     switch (phase) {
@@ -48,7 +79,6 @@ export default function ReactionBoardScreen() {
         timerRef.current = setTimeout(() => {
           readyAtRef.current = Date.now();
           setPhase('ready');
-          // Auto-fail if player doesn't tap within 10 seconds
           timerRef.current = setTimeout(() => setPhase('tooSlow'), 10_000);
         }, getRandomDelay());
         break;
@@ -66,7 +96,6 @@ export default function ReactionBoardScreen() {
         setPhase('result');
         break;
 
-      // tooSoon, tooSlow, result → reset
       default:
         setPhase('idle');
         setReactionTime(null);
@@ -79,9 +108,8 @@ export default function ReactionBoardScreen() {
     <Pressable style={[styles.screen, { backgroundColor: PHASE_BG[phase] }]} onPress={handlePress}>
       {phase === 'idle' && (
         <View style={styles.center}>
-          <Text style={styles.heading}>Reaction Board</Text>
+          <ActivityHeader title="Reaction Board" icon="flash-outline" subtitle="Tap when the screen turns green!" />
           <Text style={styles.instruction}>Tap to Start</Text>
-          <Text style={styles.hint}>Be ready to react!</Text>
           {bestReactionTime !== null && (
             <Text style={styles.best}>Session best: {bestReactionTime}ms</Text>
           )}
@@ -118,50 +146,23 @@ export default function ReactionBoardScreen() {
 
       {phase === 'result' && reactionTime !== null && (
         <View style={styles.center}>
-          <Text style={styles.resultLabel}>Your reaction time</Text>
-          <Text style={styles.resultTime}>{reactionTime}ms</Text>
+          <ScoreDisplay value={reactionTime} unit="ms" label="Your reaction time" />
           {bestReactionTime !== null && (
             <Text style={styles.best}>Session best: {bestReactionTime}ms</Text>
           )}
           <View style={styles.btnRow}>
-            <Pressable style={styles.btnSecondary} onPress={() => { setPhase('idle'); setReactionTime(null); setSaved(false); }}>
-              <Text style={styles.btnSecondaryText}>Try Again</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.btnPrimary, (saving || saved) && styles.btnDisabled]}
-              disabled={saving || saved}
-              onPress={async () => {
-                if (!user || !team || reactionTime === null) return;
-                setSaving(true);
-                try {
-                  await saveReactionBoardScore({
-                    teamId: team.id,
-                    userId: user.uid,
-                    activity: 'reactionBoard',
-                    reactionTimeMs: reactionTime,
-                    bestEverMs: bestReactionTime ?? reactionTime,
-                  });
-                  console.log('[ReactionBoard] Firestore save done, calling saveScoreLocally', reactionTime);
-                  saveScoreLocally('reactionBoard', reactionTime).catch(
-                    (e) => console.warn('[ReactionBoard] Local cache save failed:', e),
-                  );
-                  try {
-                    await captureAndSaveTeamLocation(team.id);
-                  } catch (err) {
-                    console.warn('[location] failed:', err);
-                  }
-                  setSaved(true);
-                } catch {
-                  Alert.alert('Error', 'Could not save score. Please try again.');
-                } finally {
-                  setSaving(false);
-                }
-              }}
-            >
-              <Text style={styles.btnPrimaryText}>
-                {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save Score'}
-              </Text>
-            </Pressable>
+            <SecondaryButton
+              title="Try Again"
+              onPress={() => { setPhase('idle'); setReactionTime(null); setSaved(false); }}
+              style={styles.btnFlex}
+            />
+            <PrimaryButton
+              title={saved ? 'Saved ✓' : 'Save Score'}
+              onPress={handleSave}
+              loading={saving}
+              disabled={saved}
+              style={styles.btnFlex}
+            />
           </View>
         </View>
       )}
@@ -170,9 +171,7 @@ export default function ReactionBoardScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
+  screen: { flex: 1 },
   center: {
     flex: 1,
     alignItems: 'center',
@@ -219,49 +218,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 2,
   },
-  resultLabel: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.6)',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
-  },
-  resultTime: {
-    fontSize: 64,
-    fontWeight: '900',
-    color: '#4fc3f7',
-    marginBottom: 8,
-  },
   btnRow: {
     flexDirection: 'row',
     gap: 12,
     marginTop: 32,
+    alignSelf: 'stretch',
   },
-  btnPrimary: {
-    backgroundColor: '#4fc3f7',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 10,
-  },
-  btnPrimaryText: {
-    color: '#0d1b2a',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  btnDisabled: {
-    opacity: 0.5,
-  },
-  btnSecondary: {
-    backgroundColor: '#1c2e3f',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#263d54',
-  },
-  btnSecondaryText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
-  },
+  btnFlex: { flex: 1 },
 });

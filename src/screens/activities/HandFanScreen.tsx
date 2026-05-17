@@ -16,6 +16,9 @@ import {
   compareTrials,
 } from '../../lib/handFan';
 import { HandFanTrial } from '../../types';
+import ActivityHeader from '../../components/ActivityHeader';
+import PrimaryButton from '../../components/PrimaryButton';
+import SecondaryButton from '../../components/SecondaryButton';
 
 type MaterialOption = { key: FanMaterial; label: string };
 
@@ -104,11 +107,7 @@ export default function HandFanScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled">
 
-      {/* Header */}
-      <View style={styles.headerRow}>
-        <Ionicons name="leaf-outline" size={32} color="#2E75B6" />
-        <Text style={styles.headerTitle}>Hand Fan Challenge</Text>
-      </View>
+      <ActivityHeader title="Hand Fan Challenge" icon="leaf-outline" />
 
       {/* Material selector */}
       <View style={styles.section}>
@@ -178,14 +177,7 @@ export default function HandFanScreen() {
             keyboardType="decimal-pad"
           />
 
-          <TouchableOpacity
-            style={[styles.logBtn, !canLogTrial && styles.logBtnDisabled]}
-            onPress={logTrial}
-            disabled={!canLogTrial}
-          >
-            <Ionicons name="add-circle-outline" size={18} color="#fff" style={{ marginRight: 6 }} />
-            <Text style={styles.logBtnText}>Log Trial</Text>
-          </TouchableOpacity>
+          <PrimaryButton title="Log Trial" onPress={logTrial} disabled={!canLogTrial} />
         </View>
       )}
 
@@ -228,18 +220,15 @@ export default function HandFanScreen() {
         <View style={styles.savedRow}>
           <Ionicons name="checkmark-circle" size={22} color="#388e3c" />
           <Text style={styles.savedText}>Saved!</Text>
-          <TouchableOpacity style={styles.newActivityBtn} onPress={reset}>
-            <Text style={styles.newActivityBtnText}>Start New Activity</Text>
-          </TouchableOpacity>
+          <SecondaryButton title="Start New Activity" onPress={reset} style={styles.newActivityBtn} />
         </View>
       ) : (
-        <TouchableOpacity
-          style={[styles.saveBtn, (trials.length === 0 || saving) && styles.saveBtnDisabled]}
+        <PrimaryButton
+          title={saving ? 'Saving…' : 'Save Activity'}
           onPress={handleSave}
-          disabled={trials.length === 0 || saving || !user || !team}
-        >
-          <Text style={styles.saveBtnText}>{saving ? 'Saving…' : 'Save Activity'}</Text>
-        </TouchableOpacity>
+          loading={saving}
+          disabled={trials.length === 0 || !user || !team}
+        />
       )}
     </ScrollView>
   );
@@ -248,8 +237,6 @@ export default function HandFanScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d1b2a' },
   content: { padding: 20, paddingBottom: 48 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff', flex: 1 },
   section: {
     backgroundColor: '#1c2e3f', borderRadius: 14, padding: 18,
     marginBottom: 16, borderWidth: 1, borderColor: '#263d54',
@@ -282,12 +269,6 @@ const styles = StyleSheet.create({
   },
   quickBtnText: { color: '#546e7a', fontSize: 13 },
   quickBtnTextActive: { color: '#4fc3f7', fontWeight: '700' },
-  logBtn: {
-    backgroundColor: '#2E75B6', borderRadius: 10, paddingVertical: 12,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-  },
-  logBtnDisabled: { backgroundColor: '#37474f' },
-  logBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   trialCard: {
     backgroundColor: '#0d1b2a', borderRadius: 10, padding: 12,
     marginBottom: 8, borderWidth: 1, borderColor: '#263d54',
@@ -302,17 +283,7 @@ const styles = StyleSheet.create({
   },
   summaryText: { fontSize: 13, color: '#90a4ae' },
   summaryValue: { color: '#2E75B6', fontWeight: '700' },
-  saveBtn: {
-    backgroundColor: '#2E75B6', borderRadius: 12, paddingVertical: 15,
-    alignItems: 'center',
-  },
-  saveBtnDisabled: { backgroundColor: '#37474f' },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 },
   savedRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   savedText: { color: '#388e3c', fontWeight: '700', fontSize: 16, flex: 1 },
-  newActivityBtn: {
-    borderWidth: 1, borderColor: '#2E75B6', borderRadius: 10,
-    paddingVertical: 10, paddingHorizontal: 16,
-  },
-  newActivityBtnText: { color: '#2E75B6', fontWeight: '700', fontSize: 14 },
+  newActivityBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: 16 },
 });

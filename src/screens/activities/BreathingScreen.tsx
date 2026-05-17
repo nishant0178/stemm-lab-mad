@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Animated, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  Animated, Platform, ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Accelerometer } from 'expo-sensors';
@@ -10,16 +10,14 @@ import { saveBreathingScore } from '../../services/firestore';
 import { saveScoreLocally } from '../../services/localCache';
 import { captureAndSaveTeamLocation } from '../../services/location';
 import { detectPeaks, calculateBreathsPerMinute, categoriseBreathingRate } from '../../lib/breathing';
+import ActivityHeader from '../../components/ActivityHeader';
+import PrimaryButton from '../../components/PrimaryButton';
+import SecondaryButton from '../../components/SecondaryButton';
+import ResultBadge from '../../components/ResultBadge';
+import ScoreDisplay from '../../components/ScoreDisplay';
 
 const DURATION_S = 30;
 const SAMPLE_INTERVAL_MS = 50;
-
-const SEVERITY_COLORS: Record<string, string> = {
-  low: '#1565c0',
-  normal: '#2e7d32',
-  elevated: '#e65100',
-  high: '#b71c1c',
-};
 
 type Phase = 'idle' | 'recording' | 'result';
 
@@ -126,15 +124,12 @@ export default function BreathingScreen() {
   if (phase === 'idle') {
     return (
       <View style={styles.center}>
-        <Ionicons name="heart-outline" size={72} color="#2E75B6" />
-        <Text style={styles.idleTitle}>Breathing Pace Trainer</Text>
-        <Text style={styles.idleSub}>
-          Lie flat. Place the phone gently on your chest.{'\n'}
-          Tap Start and breathe normally for {DURATION_S} seconds.
-        </Text>
-        <TouchableOpacity style={styles.primaryBtn} onPress={startRecording}>
-          <Text style={styles.primaryBtnText}>Start Recording</Text>
-        </TouchableOpacity>
+        <ActivityHeader
+          title="Breathing Pace Trainer"
+          icon="heart-outline"
+          subtitle={`Lie flat, place the phone on your chest.\nBreathe normally for ${DURATION_S} seconds.`}
+        />
+        <PrimaryButton title="Start Recording" onPress={startRecording} />
       </View>
     );
   }
@@ -149,27 +144,21 @@ export default function BreathingScreen() {
         <Text style={styles.countdown}>{countdown}s</Text>
         <Text style={styles.breatheText}>Breathe normally...</Text>
         <Text style={styles.zValue}>Z {liveZ.toFixed(3)}g</Text>
-        <TouchableOpacity style={styles.stopBtn} onPress={finishRecording}>
-          <Text style={styles.stopBtnText}>Stop Early</Text>
-        </TouchableOpacity>
+        <SecondaryButton title="Stop Early" onPress={finishRecording} style={styles.stopBtn} />
       </View>
     );
   }
 
   // ── Result ────────────────────────────────────────────────────────────────────
   const category = categoriseBreathingRate(bpm);
-  const badgeColor = SEVERITY_COLORS[category.severity];
 
   return (
     <ScrollView contentContainerStyle={styles.resultContent}>
       <Text style={styles.resultHeading}>Recording complete</Text>
 
-      <Text style={styles.bpmNumber}>{bpm}</Text>
-      <Text style={styles.bpmUnit}>breaths per minute</Text>
+      <ScoreDisplay value={bpm} label="breaths per minute" />
 
-      <View style={[styles.badge, { backgroundColor: badgeColor }]}>
-        <Text style={styles.badgeText}>{category.label}</Text>
-      </View>
+      <ResultBadge label={category.label} severity={category.severity} />
 
       <View style={styles.referenceBox}>
         <Text style={styles.referenceHeading}>Reference ranges</Text>
@@ -187,23 +176,14 @@ export default function BreathingScreen() {
       </View>
 
       <View style={styles.btnRow}>
-        <TouchableOpacity style={styles.secondaryBtn} onPress={reset}>
-          <Text style={styles.secondaryBtnText}>Try Again</Text>
-        </TouchableOpacity>
-        {saved ? (
-          <View style={[styles.primaryBtn, styles.savedBtn]}>
-            <Ionicons name="checkmark-circle" size={18} color="#fff" />
-            <Text style={[styles.primaryBtnText, { marginLeft: 6 }]}>Saved!</Text>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={[styles.primaryBtn, saving && { opacity: 0.6 }]}
-            onPress={handleSave}
-            disabled={saving || !user || !team}
-          >
-            <Text style={styles.primaryBtnText}>{saving ? 'Saving…' : 'Save Score'}</Text>
-          </TouchableOpacity>
-        )}
+        <SecondaryButton title="Try Again" onPress={reset} style={styles.btnFlex} />
+        <PrimaryButton
+          title={saved ? 'Saved ✓' : 'Save Score'}
+          onPress={handleSave}
+          loading={saving}
+          disabled={saved}
+          style={styles.btnFlex}
+        />
       </View>
     </ScrollView>
   );
@@ -230,21 +210,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  idleTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#fff',
-    marginTop: 20,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  idleSub: {
-    fontSize: 14,
-    color: '#546e7a',
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 32,
-  },
   countdown: {
     fontSize: 56,
     fontWeight: '800',
@@ -264,32 +229,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
     marginBottom: 32,
   },
-  primaryBtn: {
-    backgroundColor: '#2E75B6',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  primaryBtnText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  savedBtn: { backgroundColor: '#388e3c' },
-  stopBtn: {
-    borderWidth: 1,
-    borderColor: '#546e7a',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 28,
-  },
-  stopBtnText: {
-    color: '#90a4ae',
-    fontWeight: '600',
-    fontSize: 15,
-  },
+  stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
   resultContent: {
     flexGrow: 1,
     backgroundColor: '#0d1b2a',
@@ -303,35 +243,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     marginTop: 8,
   },
-  bpmNumber: {
-    fontSize: 88,
-    fontWeight: '800',
-    color: '#4fc3f7',
-    lineHeight: 96,
-  },
-  bpmUnit: {
-    fontSize: 16,
-    color: '#546e7a',
-    marginBottom: 20,
-  },
-  badge: {
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginBottom: 24,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
   referenceBox: {
     backgroundColor: '#1c2e3f',
     borderRadius: 12,
     padding: 16,
     alignSelf: 'stretch',
+    marginTop: 16,
     marginBottom: 28,
   },
   referenceHeading: {
@@ -360,17 +277,7 @@ const styles = StyleSheet.create({
   btnRow: {
     flexDirection: 'row',
     gap: 12,
+    alignSelf: 'stretch',
   },
-  secondaryBtn: {
-    borderWidth: 1,
-    borderColor: '#2E75B6',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-  },
-  secondaryBtnText: {
-    color: '#2E75B6',
-    fontWeight: '700',
-    fontSize: 16,
-  },
+  btnFlex: { flex: 1 },
 });
