@@ -15,10 +15,13 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { auth, db } from '../config/firebase';
 import { RootStackParamList } from '../types';
+import { useTheme } from '../theme/ThemeContext';
+import { radius, spacing } from '../theme/spacing';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 export default function RegisterScreen({ navigation }: Props) {
+  const { colors } = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,6 +58,41 @@ export default function RegisterScreen({ navigation }: Props) {
     }
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 28,
+    },
+    title: { fontSize: 32, fontWeight: '800' as const, color: colors.accent, marginBottom: 4 },
+    subtitle: { fontSize: 15, color: colors.textSecondary, marginBottom: 36 },
+    input: {
+      width: '100%',
+      backgroundColor: colors.inputBg,
+      color: colors.text,
+      borderRadius: radius.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: 14,
+      marginBottom: 14,
+      fontSize: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    button: {
+      width: '100%',
+      backgroundColor: colors.primary,
+      borderRadius: radius.md,
+      paddingVertical: 15,
+      alignItems: 'center',
+      marginTop: 6,
+      marginBottom: 18,
+    },
+    buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' as const },
+    link: { color: colors.accent, fontSize: 14 },
+  });
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -66,14 +104,14 @@ export default function RegisterScreen({ navigation }: Props) {
       <TextInput
         style={styles.input}
         placeholder="Full Name"
-        placeholderTextColor="#888"
+        placeholderTextColor={colors.textMuted}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor="#888"
+        placeholderTextColor={colors.textMuted}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -82,7 +120,7 @@ export default function RegisterScreen({ navigation }: Props) {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#888"
+        placeholderTextColor={colors.textMuted}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -90,18 +128,16 @@ export default function RegisterScreen({ navigation }: Props) {
       <TextInput
         style={styles.input}
         placeholder="Confirm Password"
-        placeholderTextColor="#888"
+        placeholderTextColor={colors.textMuted}
         secureTextEntry
         value={confirm}
         onChangeText={setConfirm}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Register</Text>
-        )}
+        {loading
+          ? <ActivityIndicator color="#fff" />
+          : <Text style={styles.buttonText}>Register</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -110,54 +146,3 @@ export default function RegisterScreen({ navigation }: Props) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 28,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#4fc3f7',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#90a4ae',
-    marginBottom: 36,
-  },
-  input: {
-    width: '100%',
-    backgroundColor: '#1c2e3f',
-    color: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    marginBottom: 14,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#263d54',
-  },
-  button: {
-    width: '100%',
-    backgroundColor: '#4fc3f7',
-    borderRadius: 10,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginTop: 6,
-    marginBottom: 18,
-  },
-  buttonText: {
-    color: '#0d1b2a',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  link: {
-    color: '#4fc3f7',
-    fontSize: 14,
-  },
-});
