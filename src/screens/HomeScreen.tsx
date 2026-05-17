@@ -47,7 +47,7 @@ function ActivityCard({ activity, onPress }: { activity: Activity; onPress: () =
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
       <View style={styles.iconWrap}>
-        <Ionicons name={activity.icon} size={24} color="#2E75B6" />
+        <Ionicons name={activity.icon} size={32} color="#2E75B6" />
       </View>
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>{activity.title}</Text>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 14,
+    padding: 12,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -157,8 +157,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   iconWrap: {
-    width: 40,
-    height: 40,
+    width: 64,
+    height: 64,
     borderRadius: 8,
     backgroundColor: '#e8f0fa',
     alignItems: 'center',
