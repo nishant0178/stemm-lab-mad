@@ -7,6 +7,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTeamStore } from '../store/teamStore';
 import { RootStackParamList } from '../types';
 import { getRecentScores, LocalScore } from '../services/localCache';
+import { colors, spacing, typography, radius, shadow } from '../theme/spacing';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -47,13 +48,13 @@ function ActivityCard({ activity, onPress }: { activity: Activity; onPress: () =
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
       <View style={styles.iconWrap}>
-        <Ionicons name={activity.icon} size={32} color="#2E75B6" />
+        <Ionicons name={activity.icon} size={26} color={colors.accent} />
       </View>
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>{activity.title}</Text>
         <Text style={styles.cardDesc} numberOfLines={1}>{activity.description}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color="#ccc" />
+      <Ionicons name="chevron-forward" size={18} color={colors.border} />
     </TouchableOpacity>
   );
 }
@@ -81,18 +82,18 @@ export default function HomeScreen() {
         <ActivityCard key={a.id} activity={a} onPress={() => navigation.navigate(a.id as any)} />
       ))}
 
-      <Text style={[styles.sectionHeading, { marginTop: 20 }]}>Health &amp; Medical Sciences</Text>
+      <Text style={[styles.sectionHeading, { marginTop: spacing.xl }]}>Health &amp; Medical Sciences</Text>
       {HEALTH.map((a) => (
         <ActivityCard key={a.id} activity={a} onPress={() => navigation.navigate(a.id as any)} />
       ))}
 
-      <Text style={[styles.sectionHeading, { marginTop: 20 }]}>Your Recent Scores</Text>
+      <Text style={[styles.sectionHeading, { marginTop: spacing.xl }]}>Your Recent Scores</Text>
       {recentScores.length === 0 ? (
         <Text style={styles.emptyText}>No scores yet. Play to record one!</Text>
       ) : (
         recentScores.map((score) => (
           <View key={score.id} style={styles.scoreRow}>
-            <Ionicons name="flash" size={14} color="#4fc3f7" style={styles.scoreIcon} />
+            <Ionicons name="flash" size={14} color={colors.accent} style={styles.scoreIcon} />
             <Text style={styles.scoreText}>
               {activityLabel(score.activity)} —{' '}
               <Text style={styles.scoreMs}>{score.reactionTimeMs}ms</Text>
@@ -118,49 +119,44 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d1b2a',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20,
-    paddingTop: 16,
-    paddingBottom: 32,
+    padding: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xxl,
   },
   greeting: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: 4,
+    ...typography.display,
+    color: colors.text,
+    marginBottom: spacing.xs,
   },
   sub: {
-    fontSize: 14,
-    color: '#546e7a',
-    marginBottom: 20,
+    ...typography.caption,
+    marginBottom: spacing.xl,
   },
   sectionHeading: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2E75B6',
-    marginBottom: 10,
+    ...typography.label,
+    color: colors.accent,
+    marginBottom: spacing.md,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    gap: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.card,
   },
   iconWrap: {
-    width: 64,
-    height: 64,
-    borderRadius: 8,
-    backgroundColor: '#e8f0fa',
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    backgroundColor: 'rgba(79, 195, 247, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -168,41 +164,38 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a2e',
+    ...typography.h3,
+    color: colors.text,
     marginBottom: 2,
   },
   cardDesc: {
-    fontSize: 13,
-    color: '#666',
+    ...typography.caption,
   },
   emptyText: {
-    fontSize: 14,
-    color: '#546e7a',
+    ...typography.body,
+    color: colors.textMuted,
     textAlign: 'center',
-    paddingVertical: 16,
+    paddingVertical: spacing.lg,
   },
   scoreRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1c2e3f',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 8,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: '#263d54',
+    borderColor: colors.border,
   },
   scoreIcon: {
-    marginRight: 8,
+    marginRight: spacing.sm,
   },
   scoreText: {
-    fontSize: 14,
-    color: '#90a4ae',
+    ...typography.caption,
     flex: 1,
   },
   scoreMs: {
-    color: '#4fc3f7',
+    color: colors.accent,
     fontWeight: '700',
   },
 });
