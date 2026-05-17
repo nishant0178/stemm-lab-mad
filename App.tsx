@@ -13,6 +13,34 @@ import { startLeaderboardWatcher } from './src/services/leaderboardWatcher';
 import { useAuthStore } from './src/store/authStore';
 import { useTeamStore } from './src/store/teamStore';
 import RootNavigator from './src/navigation/RootNavigator';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
+
+type InnerProps = {
+  loading: boolean;
+  isAuthenticated: boolean;
+  hasTeam: boolean;
+};
+
+function AppInner({ loading, isAuthenticated, hasTeam }: InnerProps) {
+  const { isDark, colors } = useTheme();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <NavigationContainer>
+        <RootNavigator isAuthenticated={isAuthenticated} hasTeam={hasTeam} />
+      </NavigationContainer>
+    </>
+  );
+}
 
 export default function App() {
   const { user, loading, setUser, setLoading } = useAuthStore();
@@ -24,9 +52,7 @@ export default function App() {
     requestNotificationPermissions().catch((e) => console.error('[App] notifications init failed:', e));
   }, []);
 
-  // Start/stop leaderboard watcher whenever auth+team state changes
   useEffect(() => {
-    // Tear down any existing watcher first
     if (watcherUnsubRef.current) {
       watcherUnsubRef.current();
       watcherUnsubRef.current = null;
@@ -65,18 +91,9 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d1b2a' }}>
-        <ActivityIndicator size="large" color="#4fc3f7" />
-      </View>
-    );
-  }
-
   return (
-    <NavigationContainer>
-      <StatusBar style="light" />
-      <RootNavigator isAuthenticated={!!user} hasTeam={!!team} />
-    </NavigationContainer>
+    <ThemeProvider>
+      <AppInner loading={loading} isAuthenticated={!!user} hasTeam={!!team} />
+    </ThemeProvider>
   );
 }
