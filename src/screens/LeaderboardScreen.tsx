@@ -96,9 +96,9 @@ export default function LeaderboardScreen() {
             >
               <Ionicons
                 name={cfg.icon as any}
-                size={13}
-                color={active ? '#fff' : colors.textMuted}
-                style={{ marginRight: 5 }}
+                size={12}
+                color={active ? '#fff' : '#64748b'}
+                style={{ marginRight: 4 }}
               />
               <Text style={[styles.chipText, active && styles.chipTextActive]}>
                 {cfg.shortLabel}
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     ...typography.h1,
-    color: colors.accent,
+    color: colors.text,
     marginBottom: spacing.lg,
   },
   chipScroll: {
@@ -172,11 +172,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: '#dde3ea',
     borderRadius: radius.full,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    backgroundColor: colors.surface,
+    paddingVertical: 5,
+    paddingHorizontal: 11,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
   chipActive: {
     backgroundColor: colors.primary,
@@ -188,8 +193,8 @@ const styles = StyleSheet.create({
     elevation: shadow.button.elevation,
   },
   chipText: {
-    color: colors.textMuted,
-    fontSize: 12,
+    color: '#1a2e3f',
+    fontSize: 11,
     fontWeight: '500',
   },
   chipTextActive: {
