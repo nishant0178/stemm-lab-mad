@@ -165,12 +165,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   chipRow: {
-    gap: spacing.sm,
-    paddingBottom: spacing.xs,
+    gap: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: '#dde3ea',
     borderRadius: radius.full,
