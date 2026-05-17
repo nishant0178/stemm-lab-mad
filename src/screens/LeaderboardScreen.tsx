@@ -14,6 +14,7 @@ import { getLeaderboard } from '../services/firestore';
 import { useTeamStore } from '../store/teamStore';
 import { ACTIVITY_CONFIGS } from '../lib/leaderboard';
 import { LeaderboardEntry } from '../types';
+import { colors, spacing, typography, radius, shadow } from '../theme/spacing';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -70,7 +71,7 @@ export default function LeaderboardScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => fetchLeaderboard(selectedActivity, true)}
-          tintColor="#4fc3f7"
+          tintColor={colors.accent}
         />
       }
     >
@@ -91,11 +92,12 @@ export default function LeaderboardScreen() {
               key={key}
               style={[styles.chip, active && styles.chipActive]}
               onPress={() => setSelectedActivity(key)}
+              activeOpacity={0.75}
             >
               <Ionicons
                 name={cfg.icon as any}
-                size={14}
-                color={active ? '#fff' : '#546e7a'}
+                size={13}
+                color={active ? '#fff' : colors.textMuted}
                 style={{ marginRight: 5 }}
               />
               <Text style={[styles.chipText, active && styles.chipTextActive]}>
@@ -109,7 +111,7 @@ export default function LeaderboardScreen() {
       <Text style={styles.sub}>{config?.label ?? selectedActivity}</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#4fc3f7" style={styles.spinner} />
+        <ActivityIndicator size="large" color={colors.accent} style={styles.spinner} />
       ) : entries.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyText}>No teams have played yet.</Text>
@@ -147,42 +149,46 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d1b2a',
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 24,
-    paddingTop: 16,
+    padding: spacing.xl,
+    paddingTop: spacing.lg,
     flexGrow: 1,
   },
   heading: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#4fc3f7',
-    marginBottom: 12,
+    ...typography.h1,
+    color: colors.accent,
+    marginBottom: spacing.lg,
   },
   chipScroll: {
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   chipRow: {
-    gap: 8,
-    paddingBottom: 4,
+    gap: spacing.sm,
+    paddingBottom: spacing.xs,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#263d54',
-    borderRadius: 20,
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    backgroundColor: '#0d1b2a',
+    borderColor: colors.border,
+    borderRadius: radius.full,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    backgroundColor: colors.surface,
   },
   chipActive: {
-    backgroundColor: '#2E75B6',
-    borderColor: '#2E75B6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+    shadowColor: shadow.button.shadowColor,
+    shadowOpacity: shadow.button.shadowOpacity,
+    shadowRadius: shadow.button.shadowRadius,
+    shadowOffset: shadow.button.shadowOffset,
+    elevation: shadow.button.elevation,
   },
   chipText: {
-    color: '#546e7a',
+    color: colors.textMuted,
     fontSize: 12,
     fontWeight: '500',
   },
@@ -191,68 +197,65 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   sub: {
-    fontSize: 13,
-    color: '#546e7a',
-    marginTop: 10,
-    marginBottom: 20,
+    ...typography.caption,
+    marginTop: spacing.md,
+    marginBottom: spacing.xl,
   },
   spinner: {
-    marginTop: 48,
+    marginTop: spacing.xxxl,
   },
   emptyWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 64,
+    paddingTop: spacing.xxxl,
   },
   emptyText: {
-    fontSize: 15,
-    color: '#546e7a',
+    ...typography.body,
+    color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: 24,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1c2e3f',
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: '#263d54',
+    borderColor: colors.border,
   },
   rowHighlight: {
-    backgroundColor: '#0d3349',
-    borderColor: '#4fc3f7',
+    backgroundColor: 'rgba(79, 195, 247, 0.08)',
+    borderColor: colors.accent,
   },
   rank: {
     width: 40,
     fontSize: 18,
     fontWeight: '800',
-    color: '#546e7a',
+    color: colors.textMuted,
     textAlign: 'center',
   },
   rankHighlight: {
-    color: '#4fc3f7',
+    color: colors.accent,
   },
   teamInfo: {
     flex: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   teamName: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#fff',
+    ...typography.bodySemi,
+    color: colors.text,
   },
   teamNameHighlight: {
-    color: '#4fc3f7',
+    color: colors.accent,
   },
   score: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#90a4ae',
+    color: colors.textSecondary,
   },
   scoreHighlight: {
-    color: '#4fc3f7',
+    color: colors.accent,
   },
 });
