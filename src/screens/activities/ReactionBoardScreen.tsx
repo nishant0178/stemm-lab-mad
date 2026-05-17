@@ -11,14 +11,15 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ScoreDisplay from '../../components/ScoreDisplay';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
 const PHASE_BG: Record<Phase, string> = {
-  idle:    '#0d1b2a',
+  idle:    colors.background,
   waiting: '#b71c1c',
   ready:   '#1b5e20',
-  result:  '#0d1b2a',
+  result:  colors.background,
   tooSoon: '#e65100',
   tooSlow: '#263d54',
 };
@@ -131,7 +132,7 @@ export default function ReactionBoardScreen() {
 
       {phase === 'tooSoon' && (
         <View style={styles.center}>
-          <Text style={styles.heading}>Too soon!</Text>
+          <Text style={styles.phaseHeading}>Too soon!</Text>
           <Text style={styles.instruction}>Wait for green.</Text>
           <Text style={styles.hint}>Tap to retry</Text>
         </View>
@@ -139,7 +140,7 @@ export default function ReactionBoardScreen() {
 
       {phase === 'tooSlow' && (
         <View style={styles.center}>
-          <Text style={styles.heading}>Too slow!</Text>
+          <Text style={styles.phaseHeading}>Too slow!</Text>
           <Text style={styles.hint}>Tap to retry</Text>
         </View>
       )}
@@ -176,52 +177,51 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing.xxl,
   },
-  heading: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#fff',
-    marginBottom: 12,
+  phaseHeading: {
+    ...typography.display,
+    color: colors.text,
+    marginBottom: spacing.md,
     textAlign: 'center',
   },
   instruction: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#fff',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
   hint: {
-    fontSize: 15,
+    ...typography.body,
     color: 'rgba(255,255,255,0.6)',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   best: {
-    fontSize: 14,
-    color: '#4fc3f7',
-    marginTop: 16,
+    ...typography.caption,
+    color: colors.accent,
+    marginTop: spacing.lg,
     textAlign: 'center',
   },
   waitText: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#fff',
+    color: colors.text,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   tapNow: {
     fontSize: 52,
     fontWeight: '900',
-    color: '#fff',
+    color: colors.text,
     textAlign: 'center',
     letterSpacing: 2,
   },
   btnRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 32,
+    gap: spacing.md,
+    marginTop: spacing.xxl,
     alignSelf: 'stretch',
   },
   btnFlex: { flex: 1 },

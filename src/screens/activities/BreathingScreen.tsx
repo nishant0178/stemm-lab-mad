@@ -15,6 +15,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 30;
 const SAMPLE_INTERVAL_MS = 50;
@@ -111,7 +112,7 @@ export default function BreathingScreen() {
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
-        <Ionicons name="phone-portrait-outline" size={64} color="#546e7a" />
+        <Ionicons name="phone-portrait-outline" size={64} color={colors.textMuted} />
         <Text style={styles.fallbackTitle}>Mobile only</Text>
         <Text style={styles.fallbackSub}>
           Accelerometer required.{'\n'}Open the app on your phone.
@@ -192,92 +193,49 @@ export default function BreathingScreen() {
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-    backgroundColor: '#0d1b2a',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
+    padding: spacing.xxl,
   },
-  fallbackTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  fallbackSub: {
-    fontSize: 14,
-    color: '#546e7a',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
+  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
   countdown: {
     fontSize: 56,
     fontWeight: '800',
-    color: '#4fc3f7',
-    marginTop: 16,
+    color: colors.accent,
+    marginTop: spacing.lg,
     lineHeight: 64,
   },
-  breatheText: {
-    fontSize: 16,
-    color: '#546e7a',
-    marginTop: 8,
-    marginBottom: 4,
-  },
+  breatheText: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
   zValue: {
     fontSize: 13,
     color: '#37474f',
     fontVariant: ['tabular-nums'],
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
   resultContent: {
     flexGrow: 1,
-    backgroundColor: '#0d1b2a',
-    padding: 24,
+    backgroundColor: colors.background,
+    padding: spacing.xl,
     alignItems: 'center',
   },
-  resultHeading: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 16,
-    marginTop: 8,
-  },
+  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.lg, marginTop: spacing.sm },
   referenceBox: {
-    backgroundColor: '#1c2e3f',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     alignSelf: 'stretch',
-    marginTop: 16,
-    marginBottom: 28,
+    marginTop: spacing.lg,
+    marginBottom: spacing.xxl,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
-  referenceHeading: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#546e7a',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 10,
-  },
-  referenceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 10,
-  },
-  referenceText: {
-    fontSize: 13,
-    color: '#90a4ae',
-  },
-  btnRow: {
-    flexDirection: 'row',
-    gap: 12,
-    alignSelf: 'stretch',
-  },
+  referenceHeading: { ...typography.label, marginBottom: spacing.md },
+  referenceRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+  referenceText: { ...typography.caption },
+  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
   btnFlex: { flex: 1 },
 });

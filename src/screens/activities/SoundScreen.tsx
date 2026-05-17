@@ -13,6 +13,7 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 // expo-av is a native module — not available on web
 let Audio: any = null;
@@ -162,7 +163,7 @@ export default function SoundScreen() {
   if (Platform.OS === 'web' || !Audio) {
     return (
       <View style={styles.center}>
-        <Ionicons name="mic-off-outline" size={64} color="#546e7a" />
+        <Ionicons name="mic-off-outline" size={64} color={colors.textMuted} />
         <Text style={styles.fallbackTitle}>Mobile only</Text>
         <Text style={styles.fallbackSub}>
           Sound recording requires a mobile device.{'\n'}Open the app on your phone to use this activity.
@@ -239,87 +240,87 @@ export default function SoundScreen() {
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-    backgroundColor: '#0d1b2a',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
+    padding: spacing.xxl,
   },
   fallbackTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-    marginTop: 16,
-    marginBottom: 8,
+    ...typography.h2,
+    color: colors.text,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
   },
   fallbackSub: {
-    fontSize: 14,
-    color: '#546e7a',
+    ...typography.caption,
     textAlign: 'center',
     lineHeight: 22,
   },
   error: {
-    color: '#ef5350',
     fontSize: 13,
+    color: colors.danger,
     textAlign: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 8,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
   },
   liveDb: {
     fontSize: 96,
     fontWeight: '800',
-    color: '#4fc3f7',
+    color: colors.accent,
     lineHeight: 100,
   },
   liveDbUnit: {
     fontSize: 24,
-    color: '#546e7a',
-    marginBottom: 12,
+    color: colors.textMuted,
+    marginBottom: spacing.md,
   },
   countdown: {
-    fontSize: 18,
-    color: '#546e7a',
-    marginBottom: 32,
+    ...typography.body,
+    color: colors.textMuted,
+    marginBottom: spacing.xxl,
   },
   stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
   resultContent: {
     flexGrow: 1,
-    backgroundColor: '#0d1b2a',
-    padding: 24,
+    backgroundColor: colors.background,
+    padding: spacing.xl,
     alignItems: 'center',
   },
   resultHeading: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 24,
-    marginTop: 8,
+    ...typography.h2,
+    color: colors.text,
+    marginBottom: spacing.xl,
+    marginTop: spacing.sm,
   },
   statsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
+    gap: spacing.md,
+    marginBottom: spacing.sm,
   },
   statBox: {
-    backgroundColor: '#1c2e3f',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.md,
     alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 90,
+    minHeight: 90,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   statValue: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#4fc3f7',
+    color: colors.accent,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#546e7a',
-    marginTop: 4,
+    ...typography.caption,
+    marginTop: spacing.xs,
   },
   btnRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
+    gap: spacing.md,
+    marginTop: spacing.md,
     alignSelf: 'stretch',
   },
   btnFlex: { flex: 1 },

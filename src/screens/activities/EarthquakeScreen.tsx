@@ -15,6 +15,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 5;
 const SAMPLE_INTERVAL_MS = 50;
@@ -33,6 +34,7 @@ export default function EarthquakeScreen() {
   const [score, setScore] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const samplesRef = useRef<Sample[]>([]);
   const subRef = useRef<any>(null);
@@ -111,7 +113,7 @@ export default function EarthquakeScreen() {
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
-        <Ionicons name="phone-portrait-outline" size={64} color="#546e7a" />
+        <Ionicons name="phone-portrait-outline" size={64} color={colors.textMuted} />
         <Text style={styles.fallbackTitle}>Mobile only</Text>
         <Text style={styles.fallbackSub}>
           Accelerometer required.{'\n'}Open the app on your phone.
@@ -132,11 +134,13 @@ export default function EarthquakeScreen() {
 
         <Text style={styles.inputLabel}>Design name</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, focusedField === 'designName' && styles.inputFocused]}
           placeholder="e.g. 4 folds + 4 pillars"
-          placeholderTextColor="#546e7a"
+          placeholderTextColor={colors.textMuted}
           value={designName}
           onChangeText={setDesignName}
+          onFocus={() => setFocusedField('designName')}
+          onBlur={() => setFocusedField(null)}
           returnKeyType="done"
         />
 
@@ -153,7 +157,7 @@ export default function EarthquakeScreen() {
   if (phase === 'recording') {
     return (
       <View style={styles.center}>
-        <Ionicons name="pulse-outline" size={56} color="#4fc3f7" />
+        <Ionicons name="pulse-outline" size={56} color={colors.accent} />
         <Text style={styles.countdown}>{countdown}s</Text>
         <Text style={styles.recordingLabel}>Recording vibrations...</Text>
         <Text style={styles.magValue}>Magnitude {liveMag.toFixed(3)}g</Text>
@@ -177,10 +181,10 @@ export default function EarthquakeScreen() {
       <View style={styles.scaleBox}>
         <Text style={styles.scaleHeading}>Score scale</Text>
         {[
-          { range: '80–100', label: 'Excellent — minimal motion', color: '#2e7d32' },
-          { range: '60–79', label: 'Good — small movement', color: '#1565c0' },
-          { range: '40–59', label: 'Fair — noticeable movement', color: '#e65100' },
-          { range: '0–39', label: 'Poor — significant movement', color: '#b71c1c' },
+          { range: '80–100', label: 'Excellent — minimal motion', color: '#22c55e' },
+          { range: '60–79', label: 'Good — small movement', color: '#3b82f6' },
+          { range: '40–59', label: 'Fair — noticeable movement', color: '#f59e0b' },
+          { range: '0–39', label: 'Poor — significant movement', color: '#ef4444' },
         ].map((r) => (
           <View key={r.range} style={styles.scaleRow}>
             <View style={[styles.dot, { backgroundColor: r.color }]} />
@@ -205,68 +209,42 @@ export default function EarthquakeScreen() {
 
 const styles = StyleSheet.create({
   center: {
-    flex: 1,
-    backgroundColor: '#0d1b2a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
+    flex: 1, backgroundColor: colors.background, alignItems: 'center',
+    justifyContent: 'center', padding: spacing.xxl,
   },
-  fallbackTitle: {
-    fontSize: 20, fontWeight: '700', color: '#fff', marginTop: 16, marginBottom: 8,
-  },
-  fallbackSub: {
-    fontSize: 14, color: '#546e7a', textAlign: 'center', lineHeight: 22,
-  },
-  idleContent: {
-    flexGrow: 1,
-    backgroundColor: '#0d1b2a',
-    padding: 24,
-    alignItems: 'center',
-  },
-  inputLabel: {
-    fontSize: 13, fontWeight: '600', color: '#90a4ae', alignSelf: 'flex-start', marginBottom: 6,
-    textTransform: 'uppercase', letterSpacing: 0.5,
-  },
+  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
+  idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+  inputLabel: { ...typography.label, alignSelf: 'flex-start', marginBottom: spacing.sm },
   input: {
-    backgroundColor: '#1c2e3f',
-    borderRadius: 10,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#263d54',
-    color: '#fff',
+    borderColor: colors.border,
+    color: colors.text,
     fontSize: 15,
-    paddingHorizontal: 14,
+    paddingHorizontal: spacing.lg,
     paddingVertical: 12,
     alignSelf: 'stretch',
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
-  countdown: {
-    fontSize: 64, fontWeight: '800', color: '#4fc3f7', marginTop: 12, lineHeight: 72,
-  },
-  recordingLabel: { fontSize: 16, color: '#546e7a', marginTop: 8, marginBottom: 4 },
-  magValue: {
-    fontSize: 13, color: '#37474f', fontVariant: ['tabular-nums'], marginBottom: 32,
-  },
+  inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
+  countdown: { fontSize: 64, fontWeight: '800', color: colors.accent, marginTop: spacing.md, lineHeight: 72 },
+  recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
+  magValue: { fontSize: 13, color: '#37474f', fontVariant: ['tabular-nums'], marginBottom: spacing.xxl },
   stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: {
-    flexGrow: 1, backgroundColor: '#0d1b2a', padding: 24, alignItems: 'center',
-  },
-  resultHeading: {
-    fontSize: 20, fontWeight: '700', color: '#fff', marginBottom: 4, marginTop: 8,
-  },
-  designLabel: {
-    fontSize: 14, color: '#4fc3f7', marginBottom: 8, fontStyle: 'italic',
-  },
+  resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
+  designLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
   scaleBox: {
-    backgroundColor: '#1c2e3f', borderRadius: 12, padding: 16,
-    alignSelf: 'stretch', marginTop: 16, marginBottom: 28,
+    backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
+    alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
+    borderWidth: 1, borderColor: colors.border,
   },
-  scaleHeading: {
-    fontSize: 13, fontWeight: '700', color: '#546e7a',
-    textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 10,
-  },
-  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-  scaleText: { fontSize: 13, color: '#90a4ae' },
-  btnRow: { flexDirection: 'row', gap: 12, alignSelf: 'stretch' },
+  scaleHeading: { ...typography.label, marginBottom: spacing.md },
+  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+  scaleText: { ...typography.caption },
+  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
   btnFlex: { flex: 1 },
 });

@@ -12,6 +12,7 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ScoreDisplay from '../../components/ScoreDisplay';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 type Phase = 'idle' | 'recording' | 'result';
 
@@ -107,7 +108,7 @@ export default function VibrationScreen() {
     }
   }
 
-  const bgColor = phase === 'recording' ? '#0a2e0a' : '#0d1b2a';
+  const bgColor = phase === 'recording' ? '#0a2e0a' : colors.background;
 
   return (
     <View style={[styles.screen, { backgroundColor: bgColor }]}>
@@ -116,7 +117,7 @@ export default function VibrationScreen() {
           <ActivityHeader
             title="Steadiness Challenge"
             icon="phone-portrait-outline"
-            subtitle="Hold still for 10 seconds. Lower score = steadier."
+            subtitle="Hold the phone perfectly still for 10 seconds. Lower score = steadier."
           />
           {bestVibrationScore !== null && (
             <Text style={styles.best}>Session best: {bestVibrationScore}</Text>
@@ -168,19 +169,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: spacing.xxl,
   },
   best: {
-    fontSize: 14,
+    ...typography.caption,
     color: '#a5d6a7',
-    marginBottom: 24,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   countdownLabel: {
     fontSize: 20,
     fontWeight: '600',
     color: 'rgba(255,255,255,0.7)',
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   countdown: {
     fontSize: 96,
@@ -189,44 +190,43 @@ const styles = StyleSheet.create({
     lineHeight: 104,
   },
   countdownSub: {
-    fontSize: 14,
+    ...typography.caption,
     color: 'rgba(255,255,255,0.5)',
-    marginBottom: 32,
+    marginBottom: spacing.xxl,
   },
   readingsBox: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderRadius: 12,
-    paddingHorizontal: 32,
-    paddingVertical: 16,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.lg,
     alignItems: 'center',
     minWidth: 180,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   readingsTitle: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 10,
+    ...typography.label,
+    marginBottom: spacing.md,
   },
   readingRow: {
     fontSize: 15,
     color: 'rgba(255,255,255,0.5)',
     fontFamily: 'monospace',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
     width: 120,
   },
   readingVal: { color: '#a5d6a7', fontWeight: '700' },
   resultDesc: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#fff',
-    marginBottom: 16,
+    color: colors.text,
+    marginBottom: spacing.lg,
     textAlign: 'center',
   },
   btnRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
+    gap: spacing.md,
+    marginTop: spacing.xl,
     alignSelf: 'stretch',
   },
   btnFlex: { flex: 1 },

@@ -20,6 +20,7 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 function isValidPositive(s: string): boolean {
   const n = parseFloat(s);
@@ -50,6 +51,7 @@ export default function ParachuteScreen() {
   const [results, setResults] = useState<Results | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const allRequiredValid =
     designName.trim().length > 0 &&
@@ -136,67 +138,83 @@ export default function ParachuteScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Your Drop Test</Text>
 
-        <Field label="Design name *" error={touched.designName && !designName.trim() ? 'Required' : ''}>
+        <Field
+          label="Design name *"
+          error={touched.designName && !designName.trim() ? 'Required' : ''}
+        >
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'designName' && styles.inputFocused]}
             placeholder="e.g. Plastic 4-corner parachute"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textMuted}
             value={designName}
             onChangeText={setDesignName}
-            onBlur={() => touch('designName')}
+            onFocus={() => setFocusedField('designName')}
+            onBlur={() => { touch('designName'); setFocusedField(null); }}
             returnKeyType="next"
           />
         </Field>
 
-        <Field label="Drop height (m) *"
-          error={touched.height && !isValidPositive(height) ? 'Must be a positive number' : ''}>
+        <Field
+          label="Drop height (m) *"
+          error={touched.height && !isValidPositive(height) ? 'Must be a positive number' : ''}
+        >
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'height' && styles.inputFocused]}
             placeholder="e.g. 2.0"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textMuted}
             value={height}
             onChangeText={setHeight}
-            onBlur={() => touch('height')}
+            onFocus={() => setFocusedField('height')}
+            onBlur={() => { touch('height'); setFocusedField(null); }}
             keyboardType="decimal-pad"
           />
         </Field>
 
-        <Field label="Fall time (s) *"
-          error={touched.fallTime && !isValidPositive(fallTime) ? 'Must be a positive number' : ''}>
+        <Field
+          label="Fall time (s) *"
+          error={touched.fallTime && !isValidPositive(fallTime) ? 'Must be a positive number' : ''}
+        >
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'fallTime' && styles.inputFocused]}
             placeholder="e.g. 1.2"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textMuted}
             value={fallTime}
             onChangeText={setFallTime}
-            onBlur={() => touch('fallTime')}
+            onFocus={() => setFocusedField('fallTime')}
+            onBlur={() => { touch('fallTime'); setFocusedField(null); }}
             keyboardType="decimal-pad"
           />
         </Field>
 
-        <Field label="Toy mass (kg) *"
-          error={touched.mass && !isValidPositive(mass) ? 'Must be a positive number' : ''}>
+        <Field
+          label="Toy mass (kg) *"
+          error={touched.mass && !isValidPositive(mass) ? 'Must be a positive number' : ''}
+        >
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'mass' && styles.inputFocused]}
             placeholder="e.g. 0.20"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textMuted}
             value={mass}
             onChangeText={setMass}
-            onBlur={() => touch('mass')}
+            onFocus={() => setFocusedField('mass')}
+            onBlur={() => { touch('mass'); setFocusedField(null); }}
             keyboardType="decimal-pad"
           />
         </Field>
 
-        <Field label="Contact time (s) — optional"
+        <Field
+          label="Contact time (s) — optional"
           error={touched.contactTime && contactTime !== '' && !isValidPositive(contactTime)
-            ? 'Must be a positive number' : ''}>
+            ? 'Must be a positive number' : ''}
+        >
           <TextInput
-            style={styles.input}
+            style={[styles.input, focusedField === 'contactTime' && styles.inputFocused]}
             placeholder="e.g. 0.05"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textMuted}
             value={contactTime}
             onChangeText={setContactTime}
-            onBlur={() => touch('contactTime')}
+            onFocus={() => setFocusedField('contactTime')}
+            onBlur={() => { touch('contactTime'); setFocusedField(null); }}
             keyboardType="decimal-pad"
           />
         </Field>
@@ -267,38 +285,40 @@ function Field({
 }
 
 const fieldStyles = StyleSheet.create({
-  wrap: { marginBottom: 14 },
-  label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 4 },
-  error: { fontSize: 12, color: '#dc2626', marginTop: 3 },
+  wrap: { marginBottom: spacing.lg },
+  label: { ...typography.caption, marginBottom: spacing.xs },
+  error: { fontSize: 12, color: colors.danger, marginTop: spacing.xs },
 });
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0d1b2a' },
-  content: { padding: 20, paddingBottom: 48 },
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
   section: {
-    backgroundColor: '#1c2e3f', borderRadius: 14, padding: 18,
-    marginBottom: 20, borderWidth: 1, borderColor: '#263d54',
+    backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
+    marginBottom: spacing.xl, borderWidth: 1, borderColor: colors.border,
   },
   sectionTitle: {
-    fontSize: 15, fontWeight: '700', color: '#4fc3f7',
-    marginBottom: 16, letterSpacing: 0.2,
+    ...typography.bodySemi,
+    color: colors.accent,
+    marginBottom: spacing.lg,
   },
   input: {
-    backgroundColor: '#0d1b2a', borderWidth: 1, borderColor: '#334155',
-    borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
-    color: '#fff', fontSize: 15,
+    backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
+    borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 11,
+    color: colors.text, fontSize: 15,
   },
+  inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
   resultRow: {
     flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: 10,
+    alignItems: 'center', paddingVertical: spacing.md,
   },
-  resultDivider: { borderBottomWidth: 1, borderBottomColor: '#263d54' },
-  resultLabel: { fontSize: 14, color: '#90a4ae' },
-  resultValue: { fontSize: 18, fontWeight: '700', color: '#fff' },
-  resultUnit: { fontSize: 13, fontWeight: '400', color: '#546e7a' },
-  badgeWrap: { marginTop: 16 },
-  saveBtn: { marginTop: 16 },
-  savedRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16, gap: 8 },
-  savedText: { color: '#388e3c', fontWeight: '700', fontSize: 15, flex: 1 },
+  resultDivider: { borderBottomWidth: 1, borderBottomColor: colors.border },
+  resultLabel: { ...typography.caption },
+  resultValue: { fontSize: 18, fontWeight: '700', color: colors.text },
+  resultUnit: { fontSize: 13, fontWeight: '400', color: colors.textMuted },
+  badgeWrap: { marginTop: spacing.md },
+  saveBtn: { marginTop: spacing.lg },
+  savedRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.lg, gap: spacing.sm },
+  savedText: { color: colors.success, fontWeight: '700', fontSize: 15, flex: 1 },
   newTestBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: 20 },
 });

@@ -16,6 +16,7 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
+import { colors, spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 8;
 const SAMPLE_INTERVAL_MS = 50;
@@ -121,7 +122,7 @@ export default function HumanPerformanceScreen() {
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
-        <Ionicons name="phone-portrait-outline" size={64} color="#546e7a" />
+        <Ionicons name="phone-portrait-outline" size={64} color={colors.textMuted} />
         <Text style={styles.fallbackTitle}>Mobile only</Text>
         <Text style={styles.fallbackSub}>
           Accelerometer required for this activity.{'\n'}
@@ -202,10 +203,10 @@ export default function HumanPerformanceScreen() {
       <View style={styles.scaleBox}>
         <Text style={styles.scaleHeading}>Score scale</Text>
         {[
-          { range: '80–100', label: 'Graceful — excellent control', color: '#2e7d32' },
-          { range: '60–79', label: 'Smooth — good control', color: '#1565c0' },
-          { range: '40–59', label: 'Rough — uneven motion', color: '#e65100' },
-          { range: '0–39', label: 'Jerky — try slower next time', color: '#b71c1c' },
+          { range: '80–100', label: 'Graceful — excellent control', color: '#22c55e' },
+          { range: '60–79', label: 'Smooth — good control', color: '#3b82f6' },
+          { range: '40–59', label: 'Rough — uneven motion', color: '#f59e0b' },
+          { range: '0–39', label: 'Jerky — try slower next time', color: '#ef4444' },
         ].map((r) => (
           <View key={r.range} style={styles.scaleRow}>
             <View style={[styles.dot, { backgroundColor: r.color }]} />
@@ -230,50 +231,43 @@ export default function HumanPerformanceScreen() {
 
 const styles = StyleSheet.create({
   center: {
-    flex: 1, backgroundColor: '#0d1b2a', alignItems: 'center',
-    justifyContent: 'center', padding: 32,
+    flex: 1, backgroundColor: colors.background, alignItems: 'center',
+    justifyContent: 'center', padding: spacing.xxl,
   },
-  fallbackTitle: { fontSize: 20, fontWeight: '700', color: '#fff', marginTop: 16, marginBottom: 8 },
-  fallbackSub: { fontSize: 14, color: '#546e7a', textAlign: 'center', lineHeight: 22 },
-  idleContent: { flexGrow: 1, backgroundColor: '#0d1b2a', padding: 24, alignItems: 'center' },
-  selectorLabel: {
-    fontSize: 12, fontWeight: '700', color: '#546e7a', textTransform: 'uppercase',
-    letterSpacing: 0.6, alignSelf: 'flex-start', marginBottom: 10,
-  },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24, alignSelf: 'stretch' },
+  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
+  idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+  selectorLabel: { ...typography.label, alignSelf: 'flex-start', marginBottom: spacing.md },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl, alignSelf: 'stretch' },
   chip: {
-    borderWidth: 1, borderColor: '#263d54', borderRadius: 20,
-    paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#1c2e3f',
+    borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
+    paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, backgroundColor: colors.surface,
   },
-  chipSelected: { backgroundColor: '#2E75B6', borderColor: '#2E75B6' },
-  chipText: { color: '#90a4ae', fontSize: 14, fontWeight: '500' },
-  chipTextSelected: { color: '#fff', fontWeight: '700' },
-  instruction: {
-    fontSize: 14, color: '#546e7a', textAlign: 'center', lineHeight: 22, marginBottom: 28,
-  },
-  countdown: { fontSize: 64, fontWeight: '800', color: '#4fc3f7', lineHeight: 72 },
-  recordingLabel: { fontSize: 16, color: '#546e7a', marginTop: 8, marginBottom: 20 },
+  chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: '500' },
+  chipTextSelected: { color: colors.text, fontWeight: '700' },
+  instruction: { ...typography.caption, textAlign: 'center', lineHeight: 22, marginBottom: spacing.xxl },
+  countdown: { fontSize: 64, fontWeight: '800', color: colors.accent, lineHeight: 72 },
+  recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xl },
   barTrack: {
-    width: '100%', height: 12, backgroundColor: '#1c2e3f',
-    borderRadius: 6, overflow: 'hidden', marginBottom: 8,
+    width: '100%', height: 12, backgroundColor: colors.surface,
+    borderRadius: radius.sm, overflow: 'hidden', marginBottom: spacing.sm,
   },
-  barFill: { height: '100%', backgroundColor: '#4fc3f7', borderRadius: 6 },
-  magValue: { fontSize: 13, color: '#37474f', marginBottom: 32 },
+  barFill: { height: '100%', backgroundColor: colors.accent, borderRadius: radius.sm },
+  magValue: { ...typography.caption, marginBottom: spacing.xxl },
   stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: { flexGrow: 1, backgroundColor: '#0d1b2a', padding: 24, alignItems: 'center' },
-  resultHeading: { fontSize: 20, fontWeight: '700', color: '#fff', marginBottom: 4, marginTop: 8 },
-  movementLabel: { fontSize: 14, color: '#4fc3f7', marginBottom: 8, fontStyle: 'italic' },
+  resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
+  movementLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
   scaleBox: {
-    backgroundColor: '#1c2e3f', borderRadius: 12, padding: 16,
-    alignSelf: 'stretch', marginTop: 16, marginBottom: 28,
+    backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
+    alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
+    borderWidth: 1, borderColor: colors.border,
   },
-  scaleHeading: {
-    fontSize: 13, fontWeight: '700', color: '#546e7a',
-    textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 10,
-  },
-  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: 10 },
-  scaleText: { fontSize: 13, color: '#90a4ae' },
-  btnRow: { flexDirection: 'row', gap: 12, alignSelf: 'stretch' },
+  scaleHeading: { ...typography.label, marginBottom: spacing.md },
+  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+  scaleText: { ...typography.caption },
+  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
   btnFlex: { flex: 1 },
 });
