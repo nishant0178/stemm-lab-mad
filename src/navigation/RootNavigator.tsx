@@ -13,10 +13,9 @@ import HandFanScreen from '../screens/activities/HandFanScreen';
 import EarthquakeScreen from '../screens/activities/EarthquakeScreen';
 import HumanPerformanceScreen from '../screens/activities/HumanPerformanceScreen';
 import BreathingScreen from '../screens/activities/BreathingScreen';
+import { useTheme } from '../theme/ThemeContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
-const HEADER_OPTS = { headerStyle: { backgroundColor: '#0d1b2a' }, headerTintColor: '#4fc3f7' };
 
 type Props = {
   isAuthenticated: boolean;
@@ -24,6 +23,12 @@ type Props = {
 };
 
 export default function RootNavigator({ isAuthenticated, hasTeam }: Props) {
+  const { colors } = useTheme();
+  const HEADER_OPTS = {
+    headerStyle: { backgroundColor: colors.background },
+    headerTintColor: colors.primary,
+  };
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!isAuthenticated ? (
@@ -39,7 +44,7 @@ export default function RootNavigator({ isAuthenticated, hasTeam }: Props) {
           <Stack.Screen name="ReactionBoard" component={ReactionBoardScreen}
             options={{ headerShown: true, headerTitle: 'Reaction Board', ...HEADER_OPTS }} />
           <Stack.Screen name="Vibration" component={VibrationScreen}
-            options={{ headerShown: true, headerTitle: 'Vibration Meter', ...HEADER_OPTS, headerTintColor: '#a5d6a7' }} />
+            options={{ headerShown: true, headerTitle: 'Vibration Meter', ...HEADER_OPTS }} />
           <Stack.Screen name="ParachuteScreen" component={ParachuteScreen}
             options={{ headerShown: true, headerTitle: 'Parachute Drop', ...HEADER_OPTS }} />
           <Stack.Screen name="SoundScreen" component={SoundScreen}
