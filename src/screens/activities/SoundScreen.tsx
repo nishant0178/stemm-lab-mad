@@ -13,9 +13,9 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
-// expo-av is a native module — not available on web
 let Audio: any = null;
 try {
   if (Platform.OS !== 'web') {
@@ -31,6 +31,7 @@ const SAMPLE_INTERVAL_MS = 100;
 type Phase = 'idle' | 'recording' | 'result';
 
 export default function SoundScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
 
@@ -50,9 +51,7 @@ export default function SoundScreen() {
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    return () => {
-      stopCleanup();
-    };
+    return () => { stopCleanup(); };
   }, []);
 
   function stopCleanup() {
@@ -107,22 +106,18 @@ export default function SoundScreen() {
     countdownRef.current = setInterval(() => {
       elapsed += 1;
       setCountdown(DURATION_S - elapsed);
-      if (elapsed >= DURATION_S) {
-        finishRecording();
-      }
+      if (elapsed >= DURATION_S) { finishRecording(); }
     }, 1000);
   }
 
   async function finishRecording() {
     if (countdownRef.current) clearInterval(countdownRef.current);
-
     try {
       if (recordingRef.current) {
         await recordingRef.current.stopAndUnloadAsync();
         recordingRef.current = null;
       }
     } catch {}
-
     const captured = [...samplesRef.current];
     const avg = calculateAverageDb(captured);
     const peak = calculatePeakDb(captured);
@@ -159,7 +154,34 @@ export default function SoundScreen() {
     setPermError('');
   }
 
-  // ── Web fallback ─────────────────────────────────────────────────────────────
+  const styles = StyleSheet.create({
+    center: {
+      flex: 1, backgroundColor: colors.background, alignItems: 'center',
+      justifyContent: 'center', padding: spacing.xxl,
+    },
+    fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+    fallbackSub: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+    error: { fontSize: 13, color: colors.danger, textAlign: 'center', marginBottom: spacing.lg, paddingHorizontal: spacing.sm },
+    liveDb: { fontSize: 96, fontWeight: '800' as const, color: colors.accent, lineHeight: 100 },
+    liveDbUnit: { fontSize: 24, color: colors.textMuted, marginBottom: spacing.md },
+    countdown: { ...typography.body, color: colors.textMuted, marginBottom: spacing.xxl },
+    stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
+    resultContent: {
+      flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center',
+    },
+    resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xl, marginTop: spacing.sm },
+    statsRow: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.sm },
+    statBox: {
+      backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md,
+      alignItems: 'center', justifyContent: 'center', minWidth: 90, minHeight: 90,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    statValue: { fontSize: 28, fontWeight: '800' as const, color: colors.accent },
+    statLabel: { ...typography.caption, color: colors.textSecondary, marginTop: spacing.xs },
+    btnRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.md, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   if (Platform.OS === 'web' || !Audio) {
     return (
       <View style={styles.center}>
@@ -172,7 +194,6 @@ export default function SoundScreen() {
     );
   }
 
-  // ── Idle ─────────────────────────────────────────────────────────────────────
   if (phase === 'idle') {
     return (
       <View style={styles.center}>
@@ -187,7 +208,6 @@ export default function SoundScreen() {
     );
   }
 
-  // ── Recording ────────────────────────────────────────────────────────────────
   if (phase === 'recording') {
     return (
       <View style={styles.center}>
@@ -199,7 +219,6 @@ export default function SoundScreen() {
     );
   }
 
-  // ── Result ───────────────────────────────────────────────────────────────────
   const category = categoriseSoundLevel(avgDb);
 
   return (
@@ -236,92 +255,3 @@ export default function SoundScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xxl,
-  },
-  fallbackTitle: {
-    ...typography.h2,
-    color: colors.text,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  fallbackSub: {
-    ...typography.caption,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  error: {
-    fontSize: 13,
-    color: colors.danger,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.sm,
-  },
-  liveDb: {
-    fontSize: 96,
-    fontWeight: '800',
-    color: colors.accent,
-    lineHeight: 100,
-  },
-  liveDbUnit: {
-    fontSize: 24,
-    color: colors.textMuted,
-    marginBottom: spacing.md,
-  },
-  countdown: {
-    ...typography.body,
-    color: colors.textMuted,
-    marginBottom: spacing.xxl,
-  },
-  stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: {
-    flexGrow: 1,
-    backgroundColor: colors.background,
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  resultHeading: {
-    ...typography.h2,
-    color: colors.text,
-    marginBottom: spacing.xl,
-    marginTop: spacing.sm,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  statBox: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 90,
-    minHeight: 90,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  statValue: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.accent,
-  },
-  statLabel: {
-    ...typography.caption,
-    marginTop: spacing.xs,
-  },
-  btnRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.md,
-    alignSelf: 'stretch',
-  },
-  btnFlex: { flex: 1 },
-});

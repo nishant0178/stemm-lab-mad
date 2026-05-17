@@ -15,7 +15,8 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 30;
 const SAMPLE_INTERVAL_MS = 50;
@@ -23,6 +24,7 @@ const SAMPLE_INTERVAL_MS = 50;
 type Phase = 'idle' | 'recording' | 'result';
 
 export default function BreathingScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
 
@@ -108,7 +110,34 @@ export default function BreathingScreen() {
     setSaved(false);
   }
 
-  // ── Web fallback ──────────────────────────────────────────────────────────────
+  const styles = StyleSheet.create({
+    center: {
+      flex: 1, backgroundColor: colors.background, alignItems: 'center',
+      justifyContent: 'center', padding: spacing.xxl,
+    },
+    fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+    fallbackSub: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+    countdown: { fontSize: 56, fontWeight: '800' as const, color: colors.accent, marginTop: spacing.lg, lineHeight: 64 },
+    breatheText: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
+    zValue: { fontSize: 13, color: colors.textMuted, fontVariant: ['tabular-nums'], marginBottom: spacing.xxl },
+    stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
+    resultContent: {
+      flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center',
+    },
+    resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.lg, marginTop: spacing.sm },
+    referenceBox: {
+      backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
+      alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    referenceHeading: { ...typography.label, color: colors.textMuted, marginBottom: spacing.md },
+    referenceRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+    dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+    referenceText: { ...typography.caption, color: colors.textSecondary },
+    btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
@@ -121,7 +150,6 @@ export default function BreathingScreen() {
     );
   }
 
-  // ── Idle ──────────────────────────────────────────────────────────────────────
   if (phase === 'idle') {
     return (
       <View style={styles.center}>
@@ -135,7 +163,6 @@ export default function BreathingScreen() {
     );
   }
 
-  // ── Recording ─────────────────────────────────────────────────────────────────
   if (phase === 'recording') {
     return (
       <View style={styles.center}>
@@ -150,7 +177,6 @@ export default function BreathingScreen() {
     );
   }
 
-  // ── Result ────────────────────────────────────────────────────────────────────
   const category = categoriseBreathingRate(bpm);
 
   return (
@@ -189,53 +215,3 @@ export default function BreathingScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xxl,
-  },
-  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
-  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
-  countdown: {
-    fontSize: 56,
-    fontWeight: '800',
-    color: colors.accent,
-    marginTop: spacing.lg,
-    lineHeight: 64,
-  },
-  breatheText: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
-  zValue: {
-    fontSize: 13,
-    color: '#37474f',
-    fontVariant: ['tabular-nums'],
-    marginBottom: spacing.xxl,
-  },
-  stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: {
-    flexGrow: 1,
-    backgroundColor: colors.background,
-    padding: spacing.xl,
-    alignItems: 'center',
-  },
-  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.lg, marginTop: spacing.sm },
-  referenceBox: {
-    backgroundColor: colors.surfaceLight,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    alignSelf: 'stretch',
-    marginTop: spacing.lg,
-    marginBottom: spacing.xxl,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  referenceHeading: { ...typography.label, marginBottom: spacing.md },
-  referenceRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
-  referenceText: { ...typography.caption },
-  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
-  btnFlex: { flex: 1 },
-});

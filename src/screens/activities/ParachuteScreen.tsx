@@ -20,7 +20,8 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 function isValidPositive(s: string): boolean {
   const n = parseFloat(s);
@@ -37,6 +38,7 @@ type Results = {
 };
 
 export default function ParachuteScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
   const scrollRef = useRef<ScrollView>(null);
@@ -60,7 +62,6 @@ export default function ParachuteScreen() {
     isValidPositive(mass);
 
   const contactTimeValid = contactTime === '' || isValidPositive(contactTime);
-
   const canCalculate = allRequiredValid && contactTimeValid;
 
   function touch(field: string) {
@@ -128,13 +129,57 @@ export default function ParachuteScreen() {
 
   const category = results ? categoriseParachute(results.weight, results.dragForce) : null;
 
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
+    section: {
+      backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
+      marginBottom: spacing.xl, borderWidth: 1, borderColor: colors.border,
+    },
+    sectionTitle: { ...typography.bodySemi, color: colors.accent, marginBottom: spacing.lg },
+    input: {
+      backgroundColor: colors.inputBg, borderWidth: 1, borderColor: colors.border,
+      borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 11,
+      color: colors.text, fontSize: 15,
+    },
+    inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
+    resultRow: {
+      flexDirection: 'row', justifyContent: 'space-between',
+      alignItems: 'center', paddingVertical: spacing.md,
+    },
+    resultDivider: { borderBottomWidth: 1, borderBottomColor: colors.border },
+    resultLabel: { ...typography.caption, color: colors.textSecondary },
+    resultValue: { fontSize: 18, fontWeight: '700' as const, color: colors.text },
+    resultUnit: { fontSize: 13, fontWeight: '400' as const, color: colors.textMuted },
+    badgeWrap: { marginTop: spacing.md },
+    saveBtn: { marginTop: spacing.lg },
+    savedRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.lg, gap: spacing.sm },
+    savedText: { color: colors.success, fontWeight: '700' as const, fontSize: 15, flex: 1 },
+    newTestBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: 20 },
+  });
+
+  const fieldStyles = StyleSheet.create({
+    wrap: { marginBottom: spacing.lg },
+    label: { ...typography.caption, color: colors.textSecondary, marginBottom: spacing.xs },
+    error: { fontSize: 12, color: colors.danger, marginTop: spacing.xs },
+  });
+
+  function Field({ label, error, children }: { label: string; error: string; children: React.ReactNode }) {
+    return (
+      <View style={fieldStyles.wrap}>
+        <Text style={fieldStyles.label}>{label}</Text>
+        {children}
+        {!!error && <Text style={fieldStyles.error}>{error}</Text>}
+      </View>
+    );
+  }
+
   return (
     <ScrollView ref={scrollRef} style={styles.container} contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled">
 
       <ActivityHeader title="Parachute Drop Challenge" icon="airplane-outline" />
 
-      {/* Inputs */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Your Drop Test</Text>
 
@@ -222,7 +267,6 @@ export default function ParachuteScreen() {
         <PrimaryButton title="Calculate" onPress={calculate} disabled={!canCalculate} />
       </View>
 
-      {/* Results */}
       {results && category && (
         <View ref={resultsRef} style={styles.section}>
           <Text style={styles.sectionTitle}>Results — "{designName.trim()}"</Text>
@@ -269,56 +313,3 @@ export default function ParachuteScreen() {
     </ScrollView>
   );
 }
-
-function Field({
-  label, error, children,
-}: {
-  label: string; error: string; children: React.ReactNode;
-}) {
-  return (
-    <View style={fieldStyles.wrap}>
-      <Text style={fieldStyles.label}>{label}</Text>
-      {children}
-      {!!error && <Text style={fieldStyles.error}>{error}</Text>}
-    </View>
-  );
-}
-
-const fieldStyles = StyleSheet.create({
-  wrap: { marginBottom: spacing.lg },
-  label: { ...typography.caption, marginBottom: spacing.xs },
-  error: { fontSize: 12, color: colors.danger, marginTop: spacing.xs },
-});
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
-  section: {
-    backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
-    marginBottom: spacing.xl, borderWidth: 1, borderColor: colors.border,
-  },
-  sectionTitle: {
-    ...typography.bodySemi,
-    color: colors.accent,
-    marginBottom: spacing.lg,
-  },
-  input: {
-    backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
-    borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 11,
-    color: colors.text, fontSize: 15,
-  },
-  inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
-  resultRow: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', paddingVertical: spacing.md,
-  },
-  resultDivider: { borderBottomWidth: 1, borderBottomColor: colors.border },
-  resultLabel: { ...typography.caption },
-  resultValue: { fontSize: 18, fontWeight: '700', color: colors.text },
-  resultUnit: { fontSize: 13, fontWeight: '400', color: colors.textMuted },
-  badgeWrap: { marginTop: spacing.md },
-  saveBtn: { marginTop: spacing.lg },
-  savedRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.lg, gap: spacing.sm },
-  savedText: { color: colors.success, fontWeight: '700', fontSize: 15, flex: 1 },
-  newTestBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: 20 },
-});

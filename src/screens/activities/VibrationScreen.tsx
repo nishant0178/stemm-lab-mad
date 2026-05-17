@@ -12,13 +12,15 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ScoreDisplay from '../../components/ScoreDisplay';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 type Phase = 'idle' | 'recording' | 'result';
 
 const RECORD_DURATION = 10;
 
 export default function VibrationScreen() {
+  const { colors } = useTheme();
   const [phase, setPhase] = useState<Phase>('idle');
   const [countdown, setCountdown] = useState(RECORD_DURATION);
   const [liveReading, setLiveReading] = useState({ x: 0, y: 0, z: 0 });
@@ -110,6 +112,26 @@ export default function VibrationScreen() {
 
   const bgColor = phase === 'recording' ? '#0a2e0a' : colors.background;
 
+  const styles = StyleSheet.create({
+    screen: { flex: 1 },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xxl },
+    best: { ...typography.caption, color: '#a5d6a7', marginBottom: spacing.xl, textAlign: 'center' },
+    countdownLabel: { fontSize: 20, fontWeight: '600' as const, color: 'rgba(255,255,255,0.7)', marginBottom: spacing.sm },
+    countdown: { fontSize: 96, fontWeight: '900' as const, color: '#a5d6a7', lineHeight: 104 },
+    countdownSub: { ...typography.caption, color: 'rgba(255,255,255,0.5)', marginBottom: spacing.xxl },
+    readingsBox: {
+      backgroundColor: colors.surfaceLight, borderRadius: radius.lg,
+      paddingHorizontal: spacing.xxl, paddingVertical: spacing.lg,
+      alignItems: 'center', minWidth: 180, borderWidth: 1, borderColor: colors.border,
+    },
+    readingsTitle: { ...typography.label, color: colors.textMuted, marginBottom: spacing.md },
+    readingRow: { fontSize: 15, color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace', marginBottom: spacing.xs, width: 120 },
+    readingVal: { color: '#a5d6a7', fontWeight: '700' as const },
+    resultDesc: { fontSize: 22, fontWeight: '700' as const, color: colors.text, marginBottom: spacing.lg, textAlign: 'center' },
+    btnRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xl, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   return (
     <View style={[styles.screen, { backgroundColor: bgColor }]}>
       {phase === 'idle' && (
@@ -162,72 +184,3 @@ export default function VibrationScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
-  },
-  best: {
-    ...typography.caption,
-    color: '#a5d6a7',
-    marginBottom: spacing.xl,
-    textAlign: 'center',
-  },
-  countdownLabel: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
-    marginBottom: spacing.sm,
-  },
-  countdown: {
-    fontSize: 96,
-    fontWeight: '900',
-    color: '#a5d6a7',
-    lineHeight: 104,
-  },
-  countdownSub: {
-    ...typography.caption,
-    color: 'rgba(255,255,255,0.5)',
-    marginBottom: spacing.xxl,
-  },
-  readingsBox: {
-    backgroundColor: colors.surfaceLight,
-    borderRadius: radius.lg,
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    minWidth: 180,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  readingsTitle: {
-    ...typography.label,
-    marginBottom: spacing.md,
-  },
-  readingRow: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.5)',
-    fontFamily: 'monospace',
-    marginBottom: spacing.xs,
-    width: 120,
-  },
-  readingVal: { color: '#a5d6a7', fontWeight: '700' },
-  resultDesc: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.lg,
-    textAlign: 'center',
-  },
-  btnRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.xl,
-    alignSelf: 'stretch',
-  },
-  btnFlex: { flex: 1 },
-});

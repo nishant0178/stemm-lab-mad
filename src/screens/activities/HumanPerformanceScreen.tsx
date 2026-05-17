@@ -16,7 +16,8 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 8;
 const SAMPLE_INTERVAL_MS = 50;
@@ -28,6 +29,7 @@ type Sample = { x: number; y: number; z: number };
 type Phase = 'idle' | 'recording' | 'result';
 
 export default function HumanPerformanceScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
 
@@ -115,10 +117,51 @@ export default function HumanPerformanceScreen() {
     setScore(0);
     setSaved(false);
     barAnim.setValue(0);
-    // keep movement selection
   }
 
-  // ── Web fallback ──────────────────────────────────────────────────────────────
+  const styles = StyleSheet.create({
+    center: {
+      flex: 1, backgroundColor: colors.background, alignItems: 'center',
+      justifyContent: 'center', padding: spacing.xxl,
+    },
+    fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+    fallbackSub: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+    idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+    selectorLabel: { ...typography.label, color: colors.textMuted, alignSelf: 'flex-start', marginBottom: spacing.md },
+    chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl, alignSelf: 'stretch' },
+    chip: {
+      borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
+      paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, backgroundColor: colors.surface,
+    },
+    chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+    chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: '500' as const },
+    chipTextSelected: { color: '#fff', fontWeight: '700' as const },
+    instruction: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: spacing.xxl },
+    countdown: { fontSize: 64, fontWeight: '800' as const, color: colors.accent, lineHeight: 72 },
+    recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xl },
+    barTrack: {
+      width: '100%', height: 12, backgroundColor: colors.surface,
+      borderRadius: radius.sm, overflow: 'hidden', marginBottom: spacing.sm,
+    },
+    barFill: { height: '100%', backgroundColor: colors.accent, borderRadius: radius.sm },
+    magValue: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xxl },
+    stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
+    resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+    resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
+    movementLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
+    scaleBox: {
+      backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
+      alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    scaleHeading: { ...typography.label, color: colors.textMuted, marginBottom: spacing.md },
+    scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+    dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+    scaleText: { ...typography.caption, color: colors.textSecondary },
+    btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
@@ -132,7 +175,6 @@ export default function HumanPerformanceScreen() {
     );
   }
 
-  // ── Idle ──────────────────────────────────────────────────────────────────────
   if (phase === 'idle') {
     return (
       <ScrollView contentContainerStyle={styles.idleContent}>
@@ -161,16 +203,11 @@ export default function HumanPerformanceScreen() {
           Hold the phone firmly in your dominant hand.{'\n'}Move slowly and smoothly.
         </Text>
 
-        <PrimaryButton
-          title="Start Recording"
-          onPress={startRecording}
-          disabled={!movement}
-        />
+        <PrimaryButton title="Start Recording" onPress={startRecording} disabled={!movement} />
       </ScrollView>
     );
   }
 
-  // ── Recording ─────────────────────────────────────────────────────────────────
   if (phase === 'recording') {
     const barWidth = barAnim.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
     return (
@@ -188,7 +225,6 @@ export default function HumanPerformanceScreen() {
     );
   }
 
-  // ── Result ────────────────────────────────────────────────────────────────────
   const category = categoriseSmoothness(score);
 
   return (
@@ -228,46 +264,3 @@ export default function HumanPerformanceScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1, backgroundColor: colors.background, alignItems: 'center',
-    justifyContent: 'center', padding: spacing.xxl,
-  },
-  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
-  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
-  idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
-  selectorLabel: { ...typography.label, alignSelf: 'flex-start', marginBottom: spacing.md },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginBottom: spacing.xl, alignSelf: 'stretch' },
-  chip: {
-    borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
-    paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, backgroundColor: colors.surface,
-  },
-  chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
-  chipText: { color: colors.textSecondary, fontSize: 14, fontWeight: '500' },
-  chipTextSelected: { color: colors.text, fontWeight: '700' },
-  instruction: { ...typography.caption, textAlign: 'center', lineHeight: 22, marginBottom: spacing.xxl },
-  countdown: { fontSize: 64, fontWeight: '800', color: colors.accent, lineHeight: 72 },
-  recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xl },
-  barTrack: {
-    width: '100%', height: 12, backgroundColor: colors.surface,
-    borderRadius: radius.sm, overflow: 'hidden', marginBottom: spacing.sm,
-  },
-  barFill: { height: '100%', backgroundColor: colors.accent, borderRadius: radius.sm },
-  magValue: { ...typography.caption, marginBottom: spacing.xxl },
-  stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
-  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
-  movementLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
-  scaleBox: {
-    backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
-    alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
-    borderWidth: 1, borderColor: colors.border,
-  },
-  scaleHeading: { ...typography.label, marginBottom: spacing.md },
-  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
-  scaleText: { ...typography.caption },
-  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
-  btnFlex: { flex: 1 },
-});

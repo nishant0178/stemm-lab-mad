@@ -19,7 +19,8 @@ import { HandFanTrial } from '../../types';
 import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 type MaterialOption = { key: FanMaterial; label: string };
 
@@ -38,6 +39,7 @@ function isValidPositive(s: string): boolean {
 }
 
 export default function HandFanScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
 
@@ -103,7 +105,61 @@ export default function HandFanScreen() {
   }
 
   const summary = compareTrials(trials);
-  const selectedMaterialOpt = MATERIALS.find((m) => m.key === material);
+
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
+    section: {
+      backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
+      marginBottom: spacing.lg, borderWidth: 1, borderColor: colors.border,
+    },
+    sectionTitle: { ...typography.bodySemi, color: colors.accent, marginBottom: spacing.lg },
+    sectionTitleRow: {
+      flexDirection: 'row', justifyContent: 'space-between',
+      alignItems: 'center', marginBottom: spacing.lg,
+    },
+    clearText: { ...typography.caption, color: colors.danger },
+    chipRow: { gap: spacing.sm, paddingBottom: spacing.xs },
+    chip: {
+      borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
+      paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, backgroundColor: colors.background,
+    },
+    chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+    chipText: { color: colors.textSecondary, fontSize: 13, fontWeight: '500' as const },
+    chipTextSelected: { color: '#fff', fontWeight: '700' as const },
+    kLabel: { ...typography.caption, color: colors.accent, marginTop: spacing.md },
+    inputLabel: { ...typography.label, color: colors.textMuted, marginBottom: spacing.xs },
+    input: {
+      backgroundColor: colors.inputBg, borderWidth: 1, borderColor: colors.border,
+      borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 11,
+      color: colors.text, fontSize: 15, marginBottom: spacing.lg,
+    },
+    inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
+    quickRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
+    quickBtn: {
+      borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
+      paddingVertical: 5, paddingHorizontal: spacing.lg, backgroundColor: colors.background,
+    },
+    quickBtnText: { ...typography.caption, color: colors.textSecondary },
+    quickBtnTextActive: { color: colors.accent, fontWeight: '700' as const },
+    trialCard: {
+      backgroundColor: colors.background, borderRadius: radius.md, padding: spacing.md,
+      marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border,
+    },
+    trialHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
+    trialName: { ...typography.bodySemi, color: colors.text, flex: 1 },
+    trialForce: { ...typography.bodySemi, color: colors.accent },
+    trialMeta: { ...typography.caption, color: colors.textSecondary },
+    summaryBox: {
+      backgroundColor: colors.background, borderRadius: radius.md, padding: spacing.md,
+      marginTop: spacing.xs, alignItems: 'center',
+    },
+    summaryText: { ...typography.caption, color: colors.textSecondary },
+    summaryValue: { color: colors.primary, fontWeight: '700' as const },
+    savedRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+    savedText: { color: colors.success, fontWeight: '700' as const, fontSize: 16, flex: 1 },
+    newActivityBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: spacing.lg },
+  });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}
@@ -111,7 +167,6 @@ export default function HandFanScreen() {
 
       <ActivityHeader title="Hand Fan Challenge" icon="leaf-outline" />
 
-      {/* Material selector */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Select your test material</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}
@@ -135,7 +190,6 @@ export default function HandFanScreen() {
         )}
       </View>
 
-      {/* Trial input — only once material is selected */}
       {material && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Log a Trial</Text>
@@ -189,7 +243,6 @@ export default function HandFanScreen() {
         </View>
       )}
 
-      {/* Trials logged */}
       {trials.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionTitleRow}>
@@ -223,7 +276,6 @@ export default function HandFanScreen() {
         </View>
       )}
 
-      {/* Save activity */}
       {saved ? (
         <View style={styles.savedRow}>
           <Ionicons name="checkmark-circle" size={22} color={colors.success} />
@@ -241,55 +293,3 @@ export default function HandFanScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.xl, paddingBottom: spacing.xxxl },
-  section: {
-    backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg,
-    marginBottom: spacing.lg, borderWidth: 1, borderColor: colors.border,
-  },
-  sectionTitle: { ...typography.bodySemi, color: colors.accent, marginBottom: spacing.lg },
-  sectionTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
-  clearText: { ...typography.caption, color: colors.danger },
-  chipRow: { gap: spacing.sm, paddingBottom: spacing.xs },
-  chip: {
-    borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
-    paddingVertical: spacing.sm, paddingHorizontal: spacing.lg, backgroundColor: colors.background,
-  },
-  chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
-  chipText: { color: colors.textSecondary, fontSize: 13, fontWeight: '500' },
-  chipTextSelected: { color: colors.text, fontWeight: '700' },
-  kLabel: { ...typography.caption, color: colors.accent, marginTop: spacing.md },
-  inputLabel: { ...typography.label, marginBottom: spacing.xs },
-  input: {
-    backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
-    borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 11,
-    color: colors.text, fontSize: 15, marginBottom: spacing.lg,
-  },
-  inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
-  quickRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
-  quickBtn: {
-    borderWidth: 1, borderColor: colors.border, borderRadius: radius.full,
-    paddingVertical: 5, paddingHorizontal: spacing.lg, backgroundColor: colors.background,
-  },
-  quickBtnText: { ...typography.caption },
-  quickBtnTextActive: { color: colors.accent, fontWeight: '700' },
-  trialCard: {
-    backgroundColor: colors.background, borderRadius: radius.md, padding: spacing.md,
-    marginBottom: spacing.sm, borderWidth: 1, borderColor: colors.border,
-  },
-  trialHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
-  trialName: { ...typography.bodySemi, color: colors.text, flex: 1 },
-  trialForce: { ...typography.bodySemi, color: colors.accent },
-  trialMeta: { ...typography.caption },
-  summaryBox: {
-    backgroundColor: colors.background, borderRadius: radius.md, padding: spacing.md,
-    marginTop: spacing.xs, alignItems: 'center',
-  },
-  summaryText: { ...typography.caption },
-  summaryValue: { color: colors.primary, fontWeight: '700' },
-  savedRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  savedText: { color: colors.success, fontWeight: '700', fontSize: 16, flex: 1 },
-  newActivityBtn: { alignSelf: 'auto', flex: 0, paddingHorizontal: spacing.lg },
-});

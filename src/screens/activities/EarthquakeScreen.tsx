@@ -15,7 +15,8 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ResultBadge from '../../components/ResultBadge';
 import ScoreDisplay from '../../components/ScoreDisplay';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, radius, typography } from '../../theme/spacing';
 
 const DURATION_S = 5;
 const SAMPLE_INTERVAL_MS = 50;
@@ -24,6 +25,7 @@ type Sample = { x: number; y: number; z: number };
 type Phase = 'idle' | 'recording' | 'result';
 
 export default function EarthquakeScreen() {
+  const { colors } = useTheme();
   const { user } = useAuthStore();
   const { team } = useTeamStore();
 
@@ -109,7 +111,41 @@ export default function EarthquakeScreen() {
     setSaved(false);
   }
 
-  // ── Web fallback ──────────────────────────────────────────────────────────────
+  const styles = StyleSheet.create({
+    center: {
+      flex: 1, backgroundColor: colors.background, alignItems: 'center',
+      justifyContent: 'center', padding: spacing.xxl,
+    },
+    fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
+    fallbackSub: { ...typography.caption, color: colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+    idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+    inputLabel: { ...typography.label, color: colors.textMuted, alignSelf: 'flex-start', marginBottom: spacing.sm },
+    input: {
+      backgroundColor: colors.inputBg, borderRadius: radius.md, borderWidth: 1,
+      borderColor: colors.border, color: colors.text, fontSize: 15,
+      paddingHorizontal: spacing.lg, paddingVertical: 12, alignSelf: 'stretch', marginBottom: spacing.xl,
+    },
+    inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
+    countdown: { fontSize: 64, fontWeight: '800' as const, color: colors.accent, marginTop: spacing.md, lineHeight: 72 },
+    recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
+    magValue: { fontSize: 13, color: colors.textMuted, fontVariant: ['tabular-nums'], marginBottom: spacing.xxl },
+    stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
+    resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
+    resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
+    designLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
+    scaleBox: {
+      backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
+      alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
+      borderWidth: 1, borderColor: colors.border,
+    },
+    scaleHeading: { ...typography.label, color: colors.textMuted, marginBottom: spacing.md },
+    scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
+    dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
+    scaleText: { ...typography.caption, color: colors.textSecondary },
+    btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   if (Platform.OS === 'web') {
     return (
       <View style={styles.center}>
@@ -122,7 +158,6 @@ export default function EarthquakeScreen() {
     );
   }
 
-  // ── Idle ──────────────────────────────────────────────────────────────────────
   if (phase === 'idle') {
     return (
       <ScrollView contentContainerStyle={styles.idleContent}>
@@ -144,16 +179,11 @@ export default function EarthquakeScreen() {
           returnKeyType="done"
         />
 
-        <PrimaryButton
-          title="Start Test"
-          onPress={startRecording}
-          disabled={!designName.trim()}
-        />
+        <PrimaryButton title="Start Test" onPress={startRecording} disabled={!designName.trim()} />
       </ScrollView>
     );
   }
 
-  // ── Recording ─────────────────────────────────────────────────────────────────
   if (phase === 'recording') {
     return (
       <View style={styles.center}>
@@ -166,7 +196,6 @@ export default function EarthquakeScreen() {
     );
   }
 
-  // ── Result ────────────────────────────────────────────────────────────────────
   const category = categoriseStability(score);
 
   return (
@@ -206,45 +235,3 @@ export default function EarthquakeScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1, backgroundColor: colors.background, alignItems: 'center',
-    justifyContent: 'center', padding: spacing.xxl,
-  },
-  fallbackTitle: { ...typography.h2, color: colors.text, marginTop: spacing.lg, marginBottom: spacing.sm },
-  fallbackSub: { ...typography.caption, textAlign: 'center', lineHeight: 22 },
-  idleContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
-  inputLabel: { ...typography.label, alignSelf: 'flex-start', marginBottom: spacing.sm },
-  input: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    color: colors.text,
-    fontSize: 15,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: 12,
-    alignSelf: 'stretch',
-    marginBottom: spacing.xl,
-  },
-  inputFocused: { borderWidth: 1.5, borderColor: colors.primary },
-  countdown: { fontSize: 64, fontWeight: '800', color: colors.accent, marginTop: spacing.md, lineHeight: 72 },
-  recordingLabel: { ...typography.body, color: colors.textMuted, marginTop: spacing.sm, marginBottom: spacing.xs },
-  magValue: { fontSize: 13, color: '#37474f', fontVariant: ['tabular-nums'], marginBottom: spacing.xxl },
-  stopBtn: { alignSelf: 'center', paddingHorizontal: 28 },
-  resultContent: { flexGrow: 1, backgroundColor: colors.background, padding: spacing.xl, alignItems: 'center' },
-  resultHeading: { ...typography.h2, color: colors.text, marginBottom: spacing.xs, marginTop: spacing.sm },
-  designLabel: { ...typography.caption, color: colors.accent, marginBottom: spacing.sm, fontStyle: 'italic' },
-  scaleBox: {
-    backgroundColor: colors.surfaceLight, borderRadius: radius.lg, padding: spacing.lg,
-    alignSelf: 'stretch', marginTop: spacing.lg, marginBottom: spacing.xxl,
-    borderWidth: 1, borderColor: colors.border,
-  },
-  scaleHeading: { ...typography.label, marginBottom: spacing.md },
-  scaleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: spacing.md },
-  scaleText: { ...typography.caption },
-  btnRow: { flexDirection: 'row', gap: spacing.md, alignSelf: 'stretch' },
-  btnFlex: { flex: 1 },
-});

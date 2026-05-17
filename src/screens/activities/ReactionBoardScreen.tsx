@@ -11,20 +11,13 @@ import ActivityHeader from '../../components/ActivityHeader';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import ScoreDisplay from '../../components/ScoreDisplay';
-import { colors, spacing, radius, typography } from '../../theme/spacing';
+import { useTheme } from '../../theme/ThemeContext';
+import { spacing, typography } from '../../theme/spacing';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'tooSoon' | 'tooSlow';
 
-const PHASE_BG: Record<Phase, string> = {
-  idle:    colors.background,
-  waiting: '#b71c1c',
-  ready:   '#1b5e20',
-  result:  colors.background,
-  tooSoon: '#e65100',
-  tooSlow: '#263d54',
-};
-
 export default function ReactionBoardScreen() {
+  const { colors } = useTheme();
   const [phase, setPhase] = useState<Phase>('idle');
   const [reactionTime, setReactionTime] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
@@ -35,6 +28,15 @@ export default function ReactionBoardScreen() {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const readyAtRef = useRef<number>(0);
+
+  const PHASE_BG: Record<Phase, string> = {
+    idle:    colors.background,
+    waiting: '#b71c1c',
+    ready:   '#1b5e20',
+    result:  colors.background,
+    tooSoon: '#e65100',
+    tooSlow: colors.surfaceLight,
+  };
 
   const clearTimer = () => {
     if (timerRef.current !== null) {
@@ -105,6 +107,19 @@ export default function ReactionBoardScreen() {
     }
   };
 
+  const styles = StyleSheet.create({
+    screen: { flex: 1 },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xxl },
+    phaseHeading: { ...typography.display, color: colors.text, marginBottom: spacing.md, textAlign: 'center' },
+    instruction: { fontSize: 22, fontWeight: '700' as const, color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+    hint: { ...typography.body, color: 'rgba(255,255,255,0.6)', textAlign: 'center', marginTop: spacing.sm },
+    best: { ...typography.caption, color: colors.accent, marginTop: spacing.lg, textAlign: 'center' },
+    waitText: { fontSize: 28, fontWeight: '800' as const, color: colors.text, textAlign: 'center', marginBottom: spacing.sm },
+    tapNow: { fontSize: 52, fontWeight: '900' as const, color: colors.text, textAlign: 'center', letterSpacing: 2 },
+    btnRow: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.xxl, alignSelf: 'stretch' },
+    btnFlex: { flex: 1 },
+  });
+
   return (
     <Pressable style={[styles.screen, { backgroundColor: PHASE_BG[phase] }]} onPress={handlePress}>
       {phase === 'idle' && (
@@ -170,59 +185,3 @@ export default function ReactionBoardScreen() {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
-  },
-  phaseHeading: {
-    ...typography.display,
-    color: colors.text,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  instruction: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.sm,
-    textAlign: 'center',
-  },
-  hint: {
-    ...typography.body,
-    color: 'rgba(255,255,255,0.6)',
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  best: {
-    ...typography.caption,
-    color: colors.accent,
-    marginTop: spacing.lg,
-    textAlign: 'center',
-  },
-  waitText: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  tapNow: {
-    fontSize: 52,
-    fontWeight: '900',
-    color: colors.text,
-    textAlign: 'center',
-    letterSpacing: 2,
-  },
-  btnRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginTop: spacing.xxl,
-    alignSelf: 'stretch',
-  },
-  btnFlex: { flex: 1 },
-});
