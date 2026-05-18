@@ -10,6 +10,7 @@ import { getTeamByUser } from './src/services/firestore';
 import { initDatabase } from './src/services/localCache';
 import { requestNotificationPermissions } from './src/services/notifications';
 import { startLeaderboardWatcher } from './src/services/leaderboardWatcher';
+import { registerBackgroundLocationTask, unregisterBackgroundLocationTask } from './src/services/backgroundTasks';
 import { useAuthStore } from './src/store/authStore';
 import { useTeamStore } from './src/store/teamStore';
 import RootNavigator from './src/navigation/RootNavigator';
@@ -23,6 +24,15 @@ type InnerProps = {
 
 function AppInner({ loading, isAuthenticated, hasTeam }: InnerProps) {
   const { isDark, colors } = useTheme();
+  const { team } = useTeamStore();
+
+  useEffect(() => {
+    if (team?.id) {
+      registerBackgroundLocationTask(team.id);
+    } else {
+      unregisterBackgroundLocationTask();
+    }
+  }, [team?.id]);
 
   if (loading) {
     return (

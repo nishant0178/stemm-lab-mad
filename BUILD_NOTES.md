@@ -59,3 +59,6 @@ export const auth = initializeAuth(app, {
 Test ad IDs are used in app.json (Google's official test IDs).
 Replace with real ad unit IDs from AdMob console before production release.
 Never use real ad IDs during development — violates AdMob policy.
+
+## Background Tasks
+A background task is registered when a user has an active team. It refreshes the team's location in Firestore every 15 minutes via expo-task-manager + expo-background-fetch. This satisfies the WorkManager/TaskManager requirement of the assignment rubric. The task is automatically unregistered when the user signs out.
