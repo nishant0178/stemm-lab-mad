@@ -9,6 +9,7 @@ import { RootStackParamList } from '../types';
 import { getRecentScores, LocalScore } from '../services/localCache';
 import { useTheme } from '../theme/ThemeContext';
 import { spacing, typography, radius, shadow } from '../theme/spacing';
+import BannerAdComponent from '../components/BannerAd';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -150,6 +151,8 @@ export default function HomeScreen() {
           </View>
         ))
       )}
+
+      <BannerAdComponent />
     </ScrollView>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Platform, View } from 'react-native';
+import { useTheme } from '../theme/ThemeContext';
 
 // react-native-google-mobile-ads requires a custom native build.
 // Wrap in try-catch so the app doesn't crash in Expo Go.
@@ -19,6 +20,8 @@ try {
 }
 
 export default function BannerAdComponent() {
+  const { colors } = useTheme();
+
   if (Platform.OS === 'web' || !BannerAd || !BannerAdSize || !TestIds) {
     return null;
   }
@@ -26,7 +29,7 @@ export default function BannerAdComponent() {
   const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-3940256099942544/6300978111';
 
   return (
-    <View style={{ alignItems: 'center', marginTop: 8, marginBottom: 4 }}>
+    <View style={{ alignItems: 'center', marginVertical: 12, backgroundColor: colors.background }}>
       <BannerAd
         unitId={adUnitId}
         size={BannerAdSize.ADAPTIVE_BANNER}
