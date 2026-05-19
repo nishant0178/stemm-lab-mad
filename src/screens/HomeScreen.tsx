@@ -152,7 +152,16 @@ export default function HomeScreen() {
         ))
       )}
 
-      <BannerAdComponent />
+      {/*
+        AdMob banner deferred — react-native-google-mobile-ads@16.3.3 has an unresolved
+        runtime crash (IndexOutOfBoundsException in BannerAdViewManager.requestAd)
+        on Expo SDK 54 regardless of architecture mode. Downgrading to v14.x fails to
+        compile against the new RN 0.81 Maven artifacts. The integration code remains
+        in src/components/BannerAd.tsx, the package is installed, the eas.json profile
+        is configured, and the AdMob plugin is in app.json — only the runtime mount is
+        deferred. Documented in report Section 6 (Limitations).
+      */}
+      {/* <BannerAdComponent /> */}
     </ScrollView>
   );
 }
